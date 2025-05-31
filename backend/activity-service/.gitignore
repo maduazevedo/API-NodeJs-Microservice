@@ -2,3 +2,9 @@
 /node_modules
 npm-debug.log
 yarn-error.log
+/generated/prisma
+/generated/prisma
+.env
+
+# Docker
+Dockerfile
