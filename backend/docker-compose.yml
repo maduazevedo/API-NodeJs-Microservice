@@ -9,6 +9,7 @@ services:
       POSTGRES_DB: TB_USER
     ports:
       - "5432:5432"
+    
 
   activity-db:
     image: postgres
@@ -24,19 +25,33 @@ services:
     build: ./user-service
     container_name: user-service
     environment:
-      - postgresql://postgres:admin@user-db:5432/TB_USER?schema=public
+      - DATABASE_URL=postgresql://postgres:admin@user-db:5432/TB_USER?schema=public
+      - RABBITMQ_HOST=rabbitmq
+      - RABBITMQ_USER=guest
+      - RABBITMQ_PASS=guest
+      - RABBITMQ_PORT=5672
     ports:
       - "3002:3002"
     depends_on:
-      - user-db
-
+      rabbitmq:
+        condition: service_healthy
+    
   auth-service:
     build: ./auth-service
     container_name: auth-service
+    environment:
+      - JWT_SECRET=minhaChaveSecretaSuperSegura123!
+      - RABBITMQ_HOST=rabbitmq
+      - RABBITMQ_USER=guest
+      - RABBITMQ_PASS=guest
+      - RABBITMQ_PORT=5672
     ports:
       - "3001:3001"
     depends_on:
-      - user-db
+      rabbitmq:
+        condition: service_healthy
+   
+
 
   activity-service:
     build: ./activity-service
@@ -56,3 +71,14 @@ services:
   #   depends_on:
   #     - user-db
   #     - activity-db
+
+  rabbitmq:
+    image: rabbitmq:3-management
+    ports:
+      - "5672:5672"   # comunicação dos serviços
+      - "15672:15672" # painel web
+    healthcheck:
+      test: ["CMD", "rabbitmq-diagnostics", "status"]
+      interval: 10s
+      timeout: 5s
+      retries: 5

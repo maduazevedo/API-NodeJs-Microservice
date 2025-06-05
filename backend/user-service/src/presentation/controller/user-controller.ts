@@ -7,6 +7,30 @@ import { deleteUsers, getUsers, loginUser, createUser, updateUserService, getUse
 export function userController (server: Express){
 
     const router = Router();
+
+
+        router.get('/:email', async (req, res) => {
+    try {
+        const { email } = req.params; 
+        const response = await getUserByEmailService(email);
+        res.status(200).send(response);
+
+    } catch (error) {
+       if (error instanceof Error) {
+    res.status(500).send({
+        error: "Erro inesperado",
+        message: error.message,
+        stack: process.env.NODE_ENV === 'development' ? error.stack : undefined
+    });
+} else {
+    res.status(500).send({
+        error: "Erro inesperado",
+        message: "Erro desconhecido"
+    });
+}
+
+    }
+});
     
     router.use(authGuard)
      router.post('/register', async (req: Request, res) =>{
@@ -150,29 +174,6 @@ export function userController (server: Express){
             }
         }
     });
-
-    router.get('/:email', async (req, res) => {
-    try {
-        const { email } = req.params; 
-        const response = await getUserByEmailService(email);
-        res.status(200).send(response);
-
-    } catch (error) {
-       if (error instanceof Error) {
-    res.status(500).send({
-        error: "Erro inesperado",
-        message: error.message,
-        stack: process.env.NODE_ENV === 'development' ? error.stack : undefined
-    });
-} else {
-    res.status(500).send({
-        error: "Erro inesperado",
-        message: "Erro desconhecido"
-    });
-}
-
-    }
-});
 
 
     server.use('/user', router);

@@ -2,11 +2,16 @@ import express from "express";
 import { json } from "express";
 import { userController } from "./presentation/controller/user-controller";
 import dotenv from "dotenv";
+import { startUserValidationConsumer } from './infraestructure/messaging/user-consumer';
 
 const server = express();
 dotenv.config();
 server.use(json());
 userController(server);
+
+startUserValidationConsumer()
+  .then(() => console.log("Consumidor User Validation iniciado"))
+  .catch((err) => console.error("Erro ao iniciar consumidor:", err));
 
 const port = process.env.PORT;
 
