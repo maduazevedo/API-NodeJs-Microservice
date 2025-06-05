@@ -1,7 +1,7 @@
 import { Express, Router, Request} from "express";
 import {authGuard} from "../../infraestructure/middleware/auth-guard";
 import { ServerError } from "../../domain/exceptions/server-error";
-import { deleteUsers, getUsers, loginUser, createUser, updateUserService } from "../../application/service/user-service";
+import { deleteUsers, getUsers, loginUser, createUser, updateUserService, getUserByEmailService } from "../../application/service/user-service";
 
 
 export function userController (server: Express){
@@ -150,6 +150,30 @@ export function userController (server: Express){
             }
         }
     });
+
+    router.get('/:email', async (req, res) => {
+    try {
+        const { email } = req.params; 
+        const response = await getUserByEmailService(email);
+        res.status(200).send(response);
+
+    } catch (error) {
+       if (error instanceof Error) {
+    res.status(500).send({
+        error: "Erro inesperado",
+        message: error.message,
+        stack: process.env.NODE_ENV === 'development' ? error.stack : undefined
+    });
+} else {
+    res.status(500).send({
+        error: "Erro inesperado",
+        message: "Erro desconhecido"
+    });
+}
+
+    }
+});
+
 
     server.use('/user', router);
 }

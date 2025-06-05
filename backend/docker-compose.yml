@@ -1,0 +1,58 @@
+services:
+
+  user-db:
+    image: postgres
+    container_name: user-db
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: admin
+      POSTGRES_DB: TB_USER
+    ports:
+      - "5432:5432"
+
+  activity-db:
+    image: postgres
+    container_name: activity-db
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: admin
+      POSTGRES_DB: TB_ACTIVITY
+    ports:
+      - "5433:5432"
+
+  user-service:
+    build: ./user-service
+    container_name: user-service
+    environment:
+      - postgresql://postgres:admin@user-db:5432/TB_USER?schema=public
+    ports:
+      - "3002:3002"
+    depends_on:
+      - user-db
+
+  auth-service:
+    build: ./auth-service
+    container_name: auth-service
+    ports:
+      - "3001:3001"
+    depends_on:
+      - user-db
+
+  activity-service:
+    build: ./activity-service
+    container_name: activity-service
+    environment:
+      - postgresql://postgres:admin@activity-db:5432/TB_ACTIVITY?schema=public
+    ports:
+      - "3003:3003"
+    depends_on:
+      - activity-db
+
+  # api-gateway:
+  #   build: ./api-gateway
+  #   container_name: api-gateway
+  #   ports:
+  #     - "3000:3000"
+  #   depends_on:
+  #     - user-db
+  #     - activity-db

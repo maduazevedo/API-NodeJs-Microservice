@@ -21,8 +21,8 @@ export async function findAllByFilterTypeAndOrder(userId: string, orderBy?: stri
         where: whereClause,
         orderBy: orderByClause,
         include: {
-            ActivityAddresses: true,
-            creators: true,
+            //ActivityAddresses: true,
+            //creators: true,
             _count: {
                 select: {
                     ActivityParticipants: true
@@ -64,13 +64,13 @@ export async function findActivitiesUserCreatorAll(userId: string) {
             createdAt: true,      
             completedAt: true,  
             isPrivate: true,     
-            creators: {           
-                select: {
-                    id: true,     
-                    name: true,    
-                    //avatar: true  
-                }
-            },
+        //     creators: {           
+        //         select: {
+        //             id: true,     
+        //             name: true,    
+        //             //avatar: true  
+        //         }
+        //     },
         },
         
     });
@@ -87,7 +87,7 @@ export async function findActivitiesUserParticipantAll(userId: string) {
             userId: userId,
         },
         select: {
-            activitysId: {
+            activity: {
                 select: {
                     id: true,
                     title: true,
@@ -109,22 +109,22 @@ export async function findActivitiesUserParticipantAll(userId: string) {
                     createdAt: true,
                     completedAt: true,
                     isPrivate: true,
-                    creators: {
-                        select: {
-                            id: true,
-                            name: true,
-                            //avatar: true
-                        }
-                    },
+                    // creatorId: {
+                    //     select: {
+                    //         id: true,
+                    //         name: true,
+                    //         //avatar: true
+                    //     }
+                    // },
                 }, 
             },
             approved: true 
         },
     })
-    return activities.map((item: { activityId: any, approved: boolean }) => ({
-        ...item.activityId, 
-        subscriptionStatus: item.approved ? "APPROVED" : "NOT_APPROVED" 
-    }));
+    // return activities.map((item: { activityId: any, approved: boolean }) => ({
+    //     ...item.activityId, 
+    //     subscriptionStatus: item.approved ? "APPROVED" : "NOT_APPROVED" 
+    // }));
 }
 
 // 4. GET ACTIVITIES/ID/PARTICIPANTS
@@ -132,33 +132,33 @@ export async function findParticipantsByActivity(activityId: string) {
     const participants = await prisma.activityParticipants.findMany({
         where: {
             activityId: activityId, 
-            activitysId: {
+            activity: {
                 deletedAt: null, 
             },
         },
         select: {
             id: true,
             userId: true, 
-            usersId: { 
-                select: {
-                    name: true, 
-                    //avatar: true, 
-                },
-            },
+            // usersId: { 
+            //     select: {
+            //         name: true, 
+            //         //avatar: true, 
+            //     },
+            // },
             approved: true, 
             confirmedAt: true, 
         },
     });
 
-    return participants.map((participant: { usersId: { name: string }, approved: boolean, [key: string]: any }) => {
-        const { usersId, approved, ...rest } = participant;
-        return {
-            ...rest,
-            name: usersId.name,
-            //avatar: usersId.avatar,
-            subscriptionStatus: approved ? "APPROVED" : "NOT_APPROVED", 
-        };
-    });
+    // return participants.map((participant: { usersId: { name: string }, approved: boolean, [key: string]: any }) => {
+    //     const { usersId, approved, ...rest } = participant;
+    //     return {
+    //         ...rest,
+    //         name: usersId.name,
+    //         //avatar: usersId.avatar,
+    //         subscriptionStatus: approved ? "APPROVED" : "NOT_APPROVED", 
+    //     };
+    // });
 }
 
 // 9. POST ACTIVITIES/NEW
@@ -174,13 +174,13 @@ export async function saveActivity(creatorId: string, title: string, description
             confirmationCode, 
             creatorId: creatorId, 
         },  include: {
-            creators: {
-                select: {
-                    id: true,
-                    name: true,
-                    //avatar: true
-                }
-            }
+            // creators: {
+            //     select: {
+            //         id: true,
+            //         name: true,
+            //         //avatar: true
+            //     }
+            // }
         }
     });
 
@@ -206,13 +206,13 @@ export async function findActivitiesUserCreator(creatorId: string, page: number,
         skip,
         take: pageSize,
         include: {
-            ActivityAddresses: true,
-            creators: true,
-            _count: {
-                select: {
-                    ActivityParticipants: true 
-                }
-            }
+            //ActivityAddresses: true,
+            // creators: true,
+            // _count: {
+            //     select: {
+            //         ActivityParticipants: true 
+            //     }
+            // }
         }
     });
 
@@ -248,13 +248,13 @@ export async function findActivitiesUserParticipant(userId: string, page: number
         skip,
         take: pageSize,
         include: {
-            ActivityAddresses: true,
-            creators: true,
-            _count: {
-                select: {
-                    ActivityParticipants: true 
-                }
-            }
+            // ActivityAddresses: true,
+            // creators: true,
+            // _count: {
+            //     select: {
+            //         ActivityParticipants: true 
+            //     }
+            // }
         }
     });
 
@@ -281,13 +281,13 @@ export async function updateActivity( idActivity: string, title: string, descrip
             scheduledDate,     
             isPrivate : isPrivate      
         }, include: {
-            creators: {
-                select: {
-                    id: true,
-                    name: true,
-                    //avatar: true
-                }
-            }
+            // creators: {
+            //     select: {
+            //         id: true,
+            //         name: true,
+            //         //avatar: true
+            //     }
+            // }
         }
     });
 

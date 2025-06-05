@@ -50,7 +50,7 @@ export async function loginUser(data: UserData){
         name: user.name,
         email: user.email,
         cpf: user.cpf,
-        avatar: user.avatar,
+        //avatar: user.avatar,
         //xp: user.xp,
         //level: user.level,
         //achievements
@@ -76,7 +76,7 @@ export async function getUsers(id : string) {
         name: user!.name,
         email: user!.email,
         cpf: user!.cpf,
-        avatar: user!.avatar,
+        //avatar: user!.avatar,
         //xp: user!.xp,
         //level: user!.level,
         //achievements, 
@@ -149,6 +149,14 @@ export async function updateUserService(name: string, email: string, password: s
 export async function deleteUsers(id:string) {
 
     return await deleteUser(id)
+}
+
+export async function getUserByEmailService(email: string) {
+    const user = await getUserByEmail(email);
+    if (!user) {
+        throw new ServerError("E4 - Usuário não encontrado", 404);
+    }
+    return user;
 }
 
 

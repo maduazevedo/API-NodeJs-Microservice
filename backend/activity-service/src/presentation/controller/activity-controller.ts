@@ -1,7 +1,7 @@
 import { Express, Router, Request } from "express";
 import { authGuard } from "../../infraestructure/middleware/auth-guard";
 import { ServerError } from "../../domain/exceptions/server-error";
-import { getByPaginatedFilterTypeAndOrder, getAllByFilterTypeAndOrder, getActivitiesUserCreator, getActivitiesUserCreatorAll, getActivitiesUserParticipantAll, createActivity, getActivitiesUserParticipant, getParticipantsByActivities, updateActivities, concludeActivities, deleteActivities} from "../../application/service/activity-service";
+import { getByPaginatedFilterTypeAndOrder, getAllByFilterTypeAndOrder, getActivitiesUserCreator, getActivitiesUserCreatorAll, createActivity, getActivitiesUserParticipant, getParticipantsByActivities, updateActivities, concludeActivities, deleteActivities} from "../../application/service/activity-service";
 import { createSubscriptionInActivity, approveParticipants, doCheckin, doUnsubscribe } from "../../application/service/activity-participant-service";
 
 export function activityController (server: Express){
@@ -113,19 +113,19 @@ export function activityController (server: Express){
         }
     });
 
-    router.get('/user/participant/all', async (req, res) =>{
-        try{
-            const userId = res.userId as string
-            const response = await getActivitiesUserParticipantAll(userId)
-            res.status(200).send(response);
-        }catch (error) {
-            if (error instanceof ServerError) {
-                res.status(500).send({ error: error.message });
-            } else {
-                res.status(500).send({ error: 'Erro inesperado. ' });
-            }
-        }
-    });
+    // router.get('/user/participant/all', async (req, res) =>{
+    //     try{
+    //         const userId = res.userId as string
+    //         const response = await getActivitiesUserParticipantAll(userId)
+    //         res.status(200).send(response);
+    //     }catch (error) {
+    //         if (error instanceof ServerError) {
+    //             res.status(500).send({ error: error.message });
+    //         } else {
+    //             res.status(500).send({ error: 'Erro inesperado. ' });
+    //         }
+    //     }
+    // });
 
     router.get('/:id/participants', async (req, res) =>{
         const {id} = req.params

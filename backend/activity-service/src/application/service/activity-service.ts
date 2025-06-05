@@ -199,37 +199,37 @@ export async function getActivitiesUserParticipant(userId: string, page: number,
     };
 }
 
-// 7. GET/ACTIVITIES/USER/PARTICIPANT/ALL
-export async function getActivitiesUserParticipantAll(userId: string){
+// // 7. GET/ACTIVITIES/USER/PARTICIPANT/ALL
+// export async function getActivitiesUserParticipantAll(userId: string){
 
-    const result = await findActivitiesUserParticipantAll(userId)
+//     const result = await findActivitiesUserParticipantAll(userId)
 
-    const response = result.map((activity: any) => ({
-        id: activity.id,
-        title: activity.title,
-        description: activity.description,
-        type: activity.type,
-        image: activity.image,
-        participantCount: activity._count.ActivityParticipants,
-        address: {
-            latitude: activity.ActivityAddresses?.latitude,
-            longitude: activity.ActivityAddresses?.longitude
-        },
-        scheduledDate: activity.scheduledDate,
-        createdAt: activity.createdAt,
-        completedAt: activity.completedAt,
-        private: activity.isPrivate,
-        creator: {
-            id: activity.creators.id,
-            name: activity.creators.name,
-            avatar: activity.creators.avatar
-        },
-        userSubscriptionStatus: activity.subscriptionStatus
+//     const response = result.map((activity: any) => ({
+//         id: activity.id,
+//         title: activity.title,
+//         description: activity.description,
+//         type: activity.type,
+//         image: activity.image,
+//         participantCount: activity._count.ActivityParticipants,
+//         // address: {
+//         //     latitude: activity.ActivityAddresses?.latitude,
+//         //     longitude: activity.ActivityAddresses?.longitude
+//         // },
+//         scheduledDate: activity.scheduledDate,
+//         createdAt: activity.createdAt,
+//         completedAt: activity.completedAt,
+//         private: activity.isPrivate,
+//         // creator: {
+//         //     id: activity.creators.id,
+//         //     name: activity.creators.name,
+//         //     avatar: activity.creators.avatar
+//         // },
+//         userSubscriptionStatus: activity.subscriptionStatus
 
-    }));
+//     }));
 
-    return response
-}
+//     return response
+// }
 
 // 8. GET/ACTIVITIES/ID/PARTICIPANTS
 export async function getParticipantsByActivities(activityId: string) {
@@ -279,8 +279,8 @@ export async function createActivity(idCreator: string, title: string, descripti
             id: activity.id,
             title: activity.title,
             description: activity.description,
-            type: activity.type,
-            image: activity.image,
+            // type: activity.type,
+            // image: activity.image,
             // address: {
             //     latitude: newAddress.latitude,
             //     longitude: newAddress.longitude,
@@ -289,7 +289,7 @@ export async function createActivity(idCreator: string, title: string, descripti
             createdAt: activity.createdAt,
             completedAt: activity.completedAt,
             private: activity.isPrivate,
-            creator: activity.creators
+            //creator: activity.creators
         }
 
         return response
@@ -342,14 +342,14 @@ export async function updateActivities(idCreator: string, idActivity: string,  t
             id: activity.id,
             title: activity.title,
             description: activity.description,
-            type: activity.type,
-            image: activity.image,
+            // type: activity.type,
+            // image: activity.image,
             //address: newAddress,
             scheduledDate: activity.scheduledDate,
             createdAt: activity.createdAt,
             completedAt: activity.completedAt,
             private: activity.isPrivate,
-            creator: activity.creators
+            // creator: activity.creators
         }
         return response
 
@@ -397,9 +397,3 @@ export async function deleteActivities(idCreator: string, idActivity: string) {
 
     return await deleteActivity(idActivity)
 }
-
-
-
-
-
-
