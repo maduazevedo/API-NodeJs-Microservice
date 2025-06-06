@@ -6,7 +6,7 @@ export async function getActivitiesByParticipant(userId: string) {
             userId: userId,  
         },
         select: {
-            activitysId: {
+            activity: {
                 select: {
                     id: true,
                     title: true,
@@ -28,23 +28,23 @@ export async function getActivitiesByParticipant(userId: string) {
                     createdAt: true,
                     completedAt: true,
                     isPrivate: true,
-                    creators: {
-                        select: {
-                            id: true,
-                            name: true,
-                            //avatar: true
-                        }
-                    },
+                //     creators: {
+                //         select: {
+                //             id: true,
+                //             name: true,
+                //             //avatar: true
+                //         }
+                //     },
                 }, 
             },
             approved: true 
         }
     })
 
-    return activities.map((item: { activitysId: any; approved: boolean }) => ({
-        ...item.activitysId, 
-        subscriptionStatus: item.approved ? "APPROVED" : "NOT_APPROVED"
-    }));
+    // return activities.map((item: { activitysId: any; approved: boolean }) => ({
+    //     ...item.activitysId, 
+    //     subscriptionStatus: item.approved ? "APPROVED" : "NOT_APPROVED"
+    // }));
 }
 
 // 10. POTS/ACTIVITIES/ID/SUBSCRIBE
@@ -152,7 +152,7 @@ export async function verifyConfirmationCode(userId: string, activityId: string,
             activityId: activityId,
         },
         include: {
-            activitysId: {
+            activity: {
                 select: {
                     confirmationCode: true,  
                 },
@@ -160,7 +160,7 @@ export async function verifyConfirmationCode(userId: string, activityId: string,
         },
     });
 
-    return participant?.activitysId.confirmationCode === providedCode;
+    return participant?.activity.confirmationCode === providedCode;
 }
 
 

@@ -1,6 +1,6 @@
 import { application } from "express";
 import { ServerError } from "../../domain/exceptions/server-error";
-import { findAllByFilterTypeAndOrder, findActivitiesUserCreator, findActivitiesUserCreatorAll, findActivitiesUserParticipantAll, deleteActivity, existsActivity, hasConcluded, isTheCreatorAct, updateActivity, findParticipantsByActivity, saveActivity, conlcudeActivity, findActivitiesUserParticipant } from "../../infraestructure/repository/activity-repository";
+import { findAllByFilterTypeAndOrder, findActivitiesUserCreator, findActivitiesUserCreatorAll, findActivitiesUserParticipantAll, deleteActivity, existsActivity, hasConcluded, isTheCreatorAct, updateActivity, findParticipantsByActivity, conlcudeActivity, findActivitiesUserParticipant, saveActivity } from "../../infraestructure/repository/activity-repository";
 const { v4: uuidv4 } = require('uuid')
 
 
@@ -27,20 +27,21 @@ export async function getByPaginatedFilterTypeAndOrder( userId: string, orderBy?
             type: activity.type,
             image: activity.image,
             confirmationCode: activity.confirmationCode,
-            participantCount: activity._count.ActivityParticipants,
-            address: {
-                latitude: activity.ActivityAddresses?.latitude,
-                longitude: activity.ActivityAddresses?.longitude
-            },
+            // participantCount: activity._count.ActivityParticipants,
+            // address: {
+            //     latitude: activity.ActivityAddresses?.latitude,
+            //     longitude: activity.ActivityAddresses?.longitude
+            // },
             scheduledDate: activity.scheduledDate,
             createdAt: activity.createdAt,
             completedAt: activity.completedAt,
-            private: activity.isPrivate,
-            creator: {
-                id: activity.creators.id,
-                name: activity.creators.name,
-                avatar: activity.creators.avatar
-            }
+            private: activity.isPrivate,    
+            creatorId: activity.idCreator
+            // creator: {
+            //     id: activity.creators.id,
+            //     name: activity.creators.name,
+            //     avatar: activity.creators.avatar
+            // }
     
         }));
         console.log(response)
@@ -52,7 +53,7 @@ export async function getByPaginatedFilterTypeAndOrder( userId: string, orderBy?
 }
 
 // 3. GET/ACTIVITIES/ALL
-export async function getAllByFilterTypeAndOrder( userId: string, typeId?: string, orderBy?: string, order?: 'asc' | 'desc') {
+export async function getAllByFilterTypeAndOrder( userId: string, type?: string, orderBy?: string, order?: 'asc' | 'desc') {
 
         const result = await findAllByFilterTypeAndOrder(userId, orderBy, order);
 
@@ -63,20 +64,20 @@ export async function getAllByFilterTypeAndOrder( userId: string, typeId?: strin
             type: activity.type,
             image: activity.image,
             confirmationCode: activity.confirmationCode,
-            participantCount: activity._count.ActivityParticipants,
-            address: {
-                latitude: activity.ActivityAddresses?.latitude,
-                longitude: activity.ActivityAddresses?.longitude
-            },
+            // participantCount: activity._count.ActivityParticipants,
+            // address: {
+            //     latitude: activity.ActivityAddresses?.latitude,
+            //     longitude: activity.ActivityAddresses?.longitude
+            // },
             scheduledDate: activity.scheduledDate,
             createdAt: activity.createdAt,
             completedAt: activity.completedAt,
             private: activity.isPrivate,
-            creator: {
-                id: activity.creators.id,
-                name: activity.creators.name,
-                avatar: activity.creators.avatar
-            }
+            // creator: {
+            //     id: activity.creators.id,
+            //     name: activity.creators.name,
+            //     avatar: activity.creators.avatar
+            // }
     
         }));
     
@@ -98,20 +99,20 @@ export async function getActivitiesUserCreator(creatorId: string, page: number, 
         type: activity.type,
         image: activity.image,
         confirmationCode: activity.confirmationCode,
-        participantCount: activity._count.ActivityParticipants,
-        address: {
-            latitude: activity.ActivityAddresses?.latitude,
-            longitude: activity.ActivityAddresses?.longitude
-        },
+        // participantCount: activity._count.ActivityParticipants,
+        // address: {
+        //     latitude: activity.ActivityAddresses?.latitude,
+        //     longitude: activity.ActivityAddresses?.longitude
+        // },
         scheduledDate: activity.scheduledDate,
         createdAt: activity.createdAt,
         completedAt: activity.completedAt,
         private: activity.isPrivate,
-        creator: {
-            id: activity.creators.id,
-            name: activity.creators.name,
-            avatar: activity.creators.avatar
-        }
+        // creator: {
+        //     id: activity.creators.id,
+        //     name: activity.creators.name,
+        //     avatar: activity.creators.avatar
+        // }
 
     }));
 
@@ -139,20 +140,20 @@ export async function getActivitiesUserCreatorAll(userId: string){
         type: activity.type,
         image: activity.image,
         confirmationCode: activity.confirmationCode,
-        participantCount: activity._count.ActivityParticipants,
-        address: {
-            latitude: activity.ActivityAddresses?.latitude,
-            longitude: activity.ActivityAddresses?.longitude
-        },
+        // participantCount: activity._count.ActivityParticipants,
+        // address: {
+        //     latitude: activity.ActivityAddresses?.latitude,
+        //     longitude: activity.ActivityAddresses?.longitude
+        // },
         scheduledDate: activity.scheduledDate,
         createdAt: activity.createdAt,
         completedAt: activity.completedAt,
         private: activity.isPrivate,
-        creator: {
-            id: activity.creators.id,
-            name: activity.creators.name,
-            avatar: activity.creators.avatar
-        }
+        // creator: {
+        //     id: activity.creators.id,
+        //     name: activity.creators.name,
+        //     avatar: activity.creators.avatar
+        // }
 
     }));
 
@@ -171,20 +172,20 @@ export async function getActivitiesUserParticipant(userId: string, page: number,
         description: activity.description,
         type: activity.type,
         image: activity.image,
-        participantCount: activity._count.ActivityParticipants,
-        address: {
-            latitude: activity.ActivityAddresses?.latitude,
-            longitude: activity.ActivityAddresses?.longitude
-        },
+        //participantCount: activity._count.ActivityParticipants,
+        // address: {
+        //     latitude: activity.ActivityAddresses?.latitude,
+        //     longitude: activity.ActivityAddresses?.longitude
+        // },
         scheduledDate: activity.scheduledDate,
         createdAt: activity.createdAt,
         completedAt: activity.completedAt,
         private: activity.isPrivate,
-        creator: {
-            id: activity.creators.id,
-            name: activity.creators.name,
-            avatar: activity.creators.avatar
-        }
+        // creator: {
+        //     id: activity.creators.id,
+        //     name: activity.creators.name,
+        //     avatar: activity.creators.avatar
+        // }
 
     }));
 
@@ -199,37 +200,37 @@ export async function getActivitiesUserParticipant(userId: string, page: number,
     };
 }
 
-// 7. GET/ACTIVITIES/USER/PARTICIPANT/ALL
-export async function getActivitiesUserParticipantAll(userId: string){
+// // 7. GET/ACTIVITIES/USER/PARTICIPANT/ALL
+// export async function getActivitiesUserParticipantAll(userId: string){
 
-    const result = await findActivitiesUserParticipantAll(userId)
+//     const result = await findActivitiesUserParticipantAll(userId)
 
-    const response = result.map((activity: any) => ({
-        id: activity.id,
-        title: activity.title,
-        description: activity.description,
-        type: activity.type,
-        image: activity.image,
-        participantCount: activity._count.ActivityParticipants,
-        address: {
-            latitude: activity.ActivityAddresses?.latitude,
-            longitude: activity.ActivityAddresses?.longitude
-        },
-        scheduledDate: activity.scheduledDate,
-        createdAt: activity.createdAt,
-        completedAt: activity.completedAt,
-        private: activity.isPrivate,
-        creator: {
-            id: activity.creators.id,
-            name: activity.creators.name,
-            avatar: activity.creators.avatar
-        },
-        userSubscriptionStatus: activity.subscriptionStatus
+//     const response = result.map((activity: any) => ({
+//         id: activity.id,
+//         title: activity.title,
+//         description: activity.description,
+//         type: activity.type,
+//         image: activity.image,
+//         participantCount: activity._count.ActivityParticipants,
+//         // address: {
+//         //     latitude: activity.ActivityAddresses?.latitude,
+//         //     longitude: activity.ActivityAddresses?.longitude
+//         // },
+//         scheduledDate: activity.scheduledDate,
+//         createdAt: activity.createdAt,
+//         completedAt: activity.completedAt,
+//         private: activity.isPrivate,
+//         // creator: {
+//         //     id: activity.creators.id,
+//         //     name: activity.creators.name,
+//         //     avatar: activity.creators.avatar
+//         // },
+//         userSubscriptionStatus: activity.subscriptionStatus
 
-    }));
+//     }));
 
-    return response
-}
+//     return response
+// }
 
 // 8. GET/ACTIVITIES/ID/PARTICIPANTS
 export async function getParticipantsByActivities(activityId: string) {
@@ -245,7 +246,7 @@ export async function getParticipantsByActivities(activityId: string) {
 }
 
 // 9. POST/ACTIVITIES/NEW
-export async function createActivity(idCreator: string, title: string, description: string, isPrivate: string, scheduledDate: string) {
+export async function createActivity(idCreator: string, title: string, description: string, type: number, isPrivate: string, scheduledDate: string) {
 
 
     // //const existsType = await existsTypeActivity(type);
@@ -267,7 +268,7 @@ export async function createActivity(idCreator: string, title: string, descripti
 
     try {
 
-        const activity = await saveActivity( idCreator, title, description,scheduledDateRaw, createdAt, isPrivateRaw, confirmationCode);
+        const activity = await saveActivity( idCreator, title, description, type, isPrivateRaw, scheduledDateRaw, createdAt, confirmationCode);
 
         // const {latitude, longitude} = await verifyAddress(address) 
 
@@ -279,8 +280,8 @@ export async function createActivity(idCreator: string, title: string, descripti
             id: activity.id,
             title: activity.title,
             description: activity.description,
-            type: activity.type,
-            image: activity.image,
+            // type: activity.type,
+            // image: activity.image,
             // address: {
             //     latitude: newAddress.latitude,
             //     longitude: newAddress.longitude,
@@ -289,7 +290,7 @@ export async function createActivity(idCreator: string, title: string, descripti
             createdAt: activity.createdAt,
             completedAt: activity.completedAt,
             private: activity.isPrivate,
-            creator: activity.creators
+            //creator: activity.creators
         }
 
         return response
@@ -342,14 +343,14 @@ export async function updateActivities(idCreator: string, idActivity: string,  t
             id: activity.id,
             title: activity.title,
             description: activity.description,
-            type: activity.type,
-            image: activity.image,
+            // type: activity.type,
+            // image: activity.image,
             //address: newAddress,
             scheduledDate: activity.scheduledDate,
             createdAt: activity.createdAt,
             completedAt: activity.completedAt,
             private: activity.isPrivate,
-            creator: activity.creators
+            // creator: activity.creators
         }
         return response
 
@@ -397,9 +398,3 @@ export async function deleteActivities(idCreator: string, idActivity: string) {
 
     return await deleteActivity(idActivity)
 }
-
-
-
-
-
-

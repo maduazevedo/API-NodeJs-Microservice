@@ -5,8 +5,8 @@
 // Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
 
 generator client {
-  provider = "prisma-client-js"
-  output   = "../generated/prisma"
+  provider      = "prisma-client-js"
+  binaryTargets = ["native", "debian-openssl-3.0.x"]
 }
 
 datasource db {
@@ -24,7 +24,10 @@ model Activities {
   deletedAt        DateTime?
   completedAt      DateTime?
   isPrivate        Boolean
-  creatorId        String        
+  creatorId        String 
+  type             Int
+  avatar           String
+  ActivityParticipants ActivityParticipants[]       
 }
 
 model ActivityParticipants {
@@ -33,4 +36,7 @@ model ActivityParticipants {
   confirmedAt DateTime?
   userId     String
   activityId String
+
+  activity Activities @relation(fields: [activityId], references: [id])
+
   }
