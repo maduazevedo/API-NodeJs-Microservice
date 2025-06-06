@@ -1,14 +1,11 @@
 import amqp from 'amqplib';
 import bcrypt from 'bcrypt';
-import { getUserByEmail } from '../../infraestructure/repository/user-repository';
+import { getUserByEmail } from '../repository/user-repository';
+
 
 export async function startUserValidationConsumer() {
-    const user = process.env.RABBITMQ_USER;
-    const pass = process.env.RABBITMQ_PASS;
-    const host = process.env.RABBITMQ_HOST;
-    const port = process.env.RABBITMQ_PORT;
 
-    const amqpUrl = `amqp://${user}:${pass}@${host}:${port}`;
+    const amqpUrl = process.env.RABBITMQ_URL!;
     console.log('Conectando no RabbitMQ em:', amqpUrl);
 
     const connection = await amqp.connect(amqpUrl);

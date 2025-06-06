@@ -9,35 +9,36 @@ import { Channel } from "amqplib";
 const jwtSecret = process.env.JWT_SECRET!
 
 
-const USER_SERVICE_URL = 'http://localhost:3002';
-
-// 1. POST AUTH/REGISTER
-// export async function createUser(name: string, email: string, cpf: string, password: string, ) {
+//1. POST AUTH/REGISTER
+export async function createUser(name: string, email: string, cpf: string, password: string, ) {
 
     
-//     if (await getUserByEmail(email) || await getUserByPassword(email, password)) {
-//         throw new ServerError ("E3 - O e-mail ou CPF informado já pertence a outro usuário. ", 409);
-//     }
+    const channel = getChannel();
+    const correlationId = uuidv4();
 
-//     //const avatarDefault = await uploadLocalImage('src/public/imgs/default.png')
-    
-//     const encryptedPassword = await bcrypt.hash(password, 10);
-//     password = encryptedPassword;
+    const resp = await sendAndWait(channel, 'user.create', { name, email, cpf, password }, correlationId);
 
+    if ('error' in resp) {
+        throw new Error(typeof resp.error === 'string' ? resp.error : 'Unknown error');
+    }
 
-//     return await saveUser(name, email, cpf, password);
-// }
+    return;
+}
 
-// 2. POST AUTH/SIGNIN
+//2. POST AUTH/SIGNIN
+
 export async function loginUser(data: UserData){
 
     const channel = getChannel();
     const correlationId = uuidv4();
 
-    const resp = await sendAndWait(channel, 'user.validate', data, correlationId, 'auth.response');
-
+    const resp = await sendAndWait(channel, 'user.validate', data, correlationId);
     const user = resp;
-   
+
+    if ('error' in resp) {
+        throw new Error(typeof resp.error === 'string' ? resp.error : 'Unknown error');
+    }
+
     const token = jwt.sign({ id: user.id, email: user.email }, jwtSecret, { expiresIn: "1d" });
 
     const response = {
@@ -58,24 +59,46 @@ export async function sendAndWait(
     channel: Channel,
     queueName: string,
     data: any,
-    correlationId: string,
-    replyQueue: string
-): Promise<UserData> {   // <- aqui você ajusta o tipo de retorno
-    return new Promise((resolve, reject) => {
-        channel.consume(replyQueue, msg => {
-            if (msg?.properties.correlationId === correlationId) {
-                const userData = JSON.parse(msg.content.toString()) as UserData;
-                resolve(userData);
-            }
-        }, { noAck: true });
+    correlationId: string
+): Promise<UserData> {
+    return new Promise(async (resolve, reject) => {
+        try {
+            // ✅ Cria uma replyQueue exclusiva e temporária
+            const { queue: replyQueue } = await channel.assertQueue('', {
+                exclusive: true,
+                autoDelete: true
+            });
 
-        channel.sendToQueue(queueName, Buffer.from(JSON.stringify(data)), {
-            correlationId,
-            replyTo: replyQueue
-        });
+            // ✅ Consome a replyQueue
+            const consumerTag = await channel.consume(replyQueue, msg => {
+                if (msg?.properties.correlationId === correlationId) {
+                    const userData = JSON.parse(msg.content.toString()) as UserData;
+                    channel.ack(msg);
+
+                    // ✅ Cancela o consumer após receber a resposta
+                    channel.cancel(consumerTag.consumerTag);
+                    clearTimeout(timeout);
+                    resolve(userData);
+                }
+            }, { noAck: false }); // ✅ sempre com noAck: false
+
+            // ✅ Envia a mensagem
+            channel.sendToQueue(queueName, Buffer.from(JSON.stringify(data)), {
+                correlationId,
+                replyTo: replyQueue
+            });
+
+            // ✅ Timeout de segurança
+            const timeout = setTimeout(() => {
+                channel.cancel(consumerTag.consumerTag);
+                reject(new Error('Timeout na resposta do RabbitMQ'));
+            }, 5000); // ajuste o tempo se quiser
+
+        } catch (err) {
+            reject(err);
+        }
     });
 }
-
 
 // export async function getUserByEmailService(email: string) {
 //     const user = await getUserByEmail(email);

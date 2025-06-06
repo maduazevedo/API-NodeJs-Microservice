@@ -9,7 +9,6 @@ export async function saveUser(name: string, email: string, cpf: string, passwor
             email: email,
             cpf: cpf,
             password: password,
-            //avatar: avatar
         }
     })
 }
@@ -62,17 +61,17 @@ export async function getUser(id: string){
 
 // }
 
-// // 6 . PUT USER/AVATAR
-// export async function updateImage(avatar: string, idUser: string) {
-//     await prisma.users.update({
-//         data: {
-//             avatar: avatar, 
-//         },
-//         where: {
-//             id: idUser, 
-//         },
-//     });
-// }
+// 6 . PUT USER/AVATAR
+export async function updateImage(avatar: string, idUser: string) {
+    await prisma.users.update({
+        data: {
+            avatar: avatar, 
+        },
+        where: {
+            id: idUser, 
+        },
+    });
+}
 
 // 7. PUT USER/UPDATE
 export async function updateUser(name:string, email: string, password:string, id: string){
@@ -122,7 +121,15 @@ export async function getUserByPassword(password: string, userEmail: string) {
         return user; 
     } else {
         return null;
+    }
 }
+
+export async function getUserByCPF(cpf: string) {
+    return await prisma.users.findUnique({
+        where: {
+            cpf: cpf 
+        }
+    });
 }
 
 export async function getDeletedAtById(id: string) {

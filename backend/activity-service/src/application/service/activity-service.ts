@@ -1,6 +1,6 @@
 import { application } from "express";
 import { ServerError } from "../../domain/exceptions/server-error";
-import { findAllByFilterTypeAndOrder, findActivitiesUserCreator, findActivitiesUserCreatorAll, findActivitiesUserParticipantAll, deleteActivity, existsActivity, hasConcluded, isTheCreatorAct, updateActivity, findParticipantsByActivity, saveActivity, conlcudeActivity, findActivitiesUserParticipant } from "../../infraestructure/repository/activity-repository";
+import { findAllByFilterTypeAndOrder, findActivitiesUserCreator, findActivitiesUserCreatorAll, findActivitiesUserParticipantAll, deleteActivity, existsActivity, hasConcluded, isTheCreatorAct, updateActivity, findParticipantsByActivity, conlcudeActivity, findActivitiesUserParticipant } from "../../infraestructure/repository/activity-repository";
 const { v4: uuidv4 } = require('uuid')
 
 
@@ -244,61 +244,61 @@ export async function getParticipantsByActivities(activityId: string) {
     return response   
 }
 
-// 9. POST/ACTIVITIES/NEW
-export async function createActivity(idCreator: string, title: string, description: string, isPrivate: string, scheduledDate: string) {
+// // 9. POST/ACTIVITIES/NEW
+// export async function createActivity(idCreator: string, title: string, description: string, isPrivate: string, scheduledDate: string) {
 
 
-    // //const existsType = await existsTypeActivity(type);
-    // if (!existsType) {
-    //     throw new ServerError("E24 - O id informado é inválido. ", 400)
-    // }
+//     // //const existsType = await existsTypeActivity(type);
+//     // if (!existsType) {
+//     //     throw new ServerError("E24 - O id informado é inválido. ", 400)
+//     // }
 
-    // const regex = /\.(jpg|png)$/i;
-    // const result = regex.test(image);
+//     // const regex = /\.(jpg|png)$/i;
+//     // const result = regex.test(image);
 
-    // if (!result) {
-    //     throw new ServerError("E2 - A imagem deve ser um arquivo PNG ou JPG.", 400);
-    // }
+//     // if (!result) {
+//     //     throw new ServerError("E2 - A imagem deve ser um arquivo PNG ou JPG.", 400);
+//     // }
 
-    const isPrivateRaw: boolean = isPrivate === "true";
-    const scheduledDateRaw: Date = new Date(scheduledDate);
-    const confirmationCode = uuidv4();
-    const createdAt = new Date()
+//     const isPrivateRaw: boolean = isPrivate === "true";
+//     const scheduledDateRaw: Date = new Date(scheduledDate);
+//     const confirmationCode = uuidv4();
+//     const createdAt = new Date()
 
-    try {
+//     try {
 
-        const activity = await saveActivity( idCreator, title, description,scheduledDateRaw, createdAt, isPrivateRaw, confirmationCode);
+//         const activity = await saveActivity( idCreator, title, description,scheduledDateRaw, createdAt, isPrivateRaw, confirmationCode);
 
-        // const {latitude, longitude} = await verifyAddress(address) 
+//         // const {latitude, longitude} = await verifyAddress(address) 
 
-        // const newAddress = await createAddress(activity.id, latitude, longitude);
+//         // const newAddress = await createAddress(activity.id, latitude, longitude);
 
-        // void addAchievement(idCreator, "Criar Atividade")
+//         // void addAchievement(idCreator, "Criar Atividade")
         
-        const response = {
-            id: activity.id,
-            title: activity.title,
-            description: activity.description,
-            // type: activity.type,
-            // image: activity.image,
-            // address: {
-            //     latitude: newAddress.latitude,
-            //     longitude: newAddress.longitude,
-            // },
-            scheduledDate: activity.scheduledDate,
-            createdAt: activity.createdAt,
-            completedAt: activity.completedAt,
-            private: activity.isPrivate,
-            //creator: activity.creators
-        }
+//         const response = {
+//             id: activity.id,
+//             title: activity.title,
+//             description: activity.description,
+//             // type: activity.type,
+//             // image: activity.image,
+//             // address: {
+//             //     latitude: newAddress.latitude,
+//             //     longitude: newAddress.longitude,
+//             // },
+//             scheduledDate: activity.scheduledDate,
+//             createdAt: activity.createdAt,
+//             completedAt: activity.completedAt,
+//             private: activity.isPrivate,
+//             //creator: activity.creators
+//         }
 
-        return response
+//         return response
         
-    } catch (error) {
+//     } catch (error) {
 
-        throw new ServerError("Erro ao criar endereço.", 500);
-    }
-}
+//         throw new ServerError("Erro ao criar endereço.", 500);
+//     }
+// }
 
 //11. PUT ACTIVITIES/ID/UPDATE
 export async function updateActivities(idCreator: string, idActivity: string,  title: string, description: string, isPrivate: string, scheduledDate: string) {

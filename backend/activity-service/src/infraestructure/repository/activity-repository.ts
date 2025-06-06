@@ -161,32 +161,32 @@ export async function findParticipantsByActivity(activityId: string) {
     // });
 }
 
-// 9. POST ACTIVITIES/NEW
-export async function saveActivity(creatorId: string, title: string, description: string, scheduledDate: Date, createdAt: Date, Isprivate: boolean, confirmationCode: string) {
-    const activity = await prisma.activities.create({
+// // 9. POST ACTIVITIES/NEW
+// export async function saveActivity(creatorId: string, title: string, description: string, scheduledDate: Date, createdAt: Date, Isprivate: boolean, confirmationCode: string) {
+//     const activity = await prisma.activities.create({
 
-        data: {       
-            title: title,          
-            description: description,         
-            scheduledDate,   
-            createdAt,        
-            isPrivate : Isprivate,       
-            confirmationCode, 
-            creatorId: creatorId, 
-        },  include: {
-            // creators: {
-            //     select: {
-            //         id: true,
-            //         name: true,
-            //         //avatar: true
-            //     }
-            // }
-        }
-    });
+//         data: {       
+//             title: title,          
+//             description: description,         
+//             scheduledDate,   
+//             createdAt,        
+//             isPrivate : Isprivate,       
+//             confirmationCode, 
+//             creatorId: creatorId, 
+//         },  include: {
+//             // creators: {
+//             //     select: {
+//             //         id: true,
+//             //         name: true,
+//             //         //avatar: true
+//             //     }
+//             // }
+//         }
+//     });
 
-    return activity;
+    // return activity;
 
-}
+// }
 
 // 4. GET ACTIVITUES/USER/CREATOR
 export async function findActivitiesUserCreator(creatorId: string, page: number, pageSize: number) {

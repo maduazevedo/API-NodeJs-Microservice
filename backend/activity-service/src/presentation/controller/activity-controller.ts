@@ -1,7 +1,7 @@
 import { Express, Router, Request } from "express";
 import { authGuard } from "../../infraestructure/middleware/auth-guard";
 import { ServerError } from "../../domain/exceptions/server-error";
-import { getByPaginatedFilterTypeAndOrder, getAllByFilterTypeAndOrder, getActivitiesUserCreator, getActivitiesUserCreatorAll, createActivity, getActivitiesUserParticipant, getParticipantsByActivities, updateActivities, concludeActivities, deleteActivities} from "../../application/service/activity-service";
+import { getByPaginatedFilterTypeAndOrder, getAllByFilterTypeAndOrder, getActivitiesUserCreator, getActivitiesUserCreatorAll, getActivitiesUserParticipant, getParticipantsByActivities, updateActivities, concludeActivities, deleteActivities} from "../../application/service/activity-service";
 import { createSubscriptionInActivity, approveParticipants, doCheckin, doUnsubscribe } from "../../application/service/activity-participant-service";
 
 export function activityController (server: Express){
@@ -134,24 +134,24 @@ export function activityController (server: Express){
     });
 
 
-    router.post('/new', async(req: Request, res) =>{
+    // router.post('/new', async(req: Request, res) =>{
 
-        try{
-            const creatorId = res.userId as string
-            const {title, description, type, address, scheduledDate, isPrivate} = req.body;
-            //const imgUrl = await uploadImage(req.file!)
+    //     try{
+    //         const creatorId = res.userId as string
+    //         const {title, description, type, address, scheduledDate, isPrivate} = req.body;
+    //         //const imgUrl = await uploadImage(req.file!)
 
-            const response = await createActivity(creatorId, title, description, isPrivate, scheduledDate)
-            res.status(200).send(response);
-        }catch(error){
-            if (error instanceof ServerError){
-                res.status(error.statusCode).send({error: error.message})
-                return
-            }else{
-                res.status(500).send({error: "Erro inesperado. "})
-            }
-        }
-    });
+    //         const response = await createActivity(creatorId, title, description, isPrivate, scheduledDate)
+    //         res.status(200).send(response);
+    //     }catch(error){
+    //         if (error instanceof ServerError){
+    //             res.status(error.statusCode).send({error: error.message})
+    //             return
+    //         }else{
+    //             res.status(500).send({error: "Erro inesperado. "})
+    //         }
+    //     }
+    // });
 
     router.post('/:id/subscribe', async (req: Request, res) =>{
 

@@ -3,12 +3,8 @@ import amqp from 'amqplib';
 let channel: amqp.Channel;
 
 export async function connectRabbitMQ() {
-  const user = process.env.RABBITMQ_USER;
-  const pass = process.env.RABBITMQ_PASS;
-  const host = process.env.RABBITMQ_HOST;
-  const port = process.env.RABBITMQ_PORT;
 
-  const amqpUrl = `amqp://${user}:${pass}@${host}:${port}`;
+  const amqpUrl = process.env.RABBITMQ_URL!;
 
   console.log('Conectando no RabbitMQ em:', amqpUrl);
 

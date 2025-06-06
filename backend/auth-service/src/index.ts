@@ -13,7 +13,6 @@ const port = process.env.PORT;
 
 connectRabbitMQ()
   .then(() => {
-    const porta = port || 3001;
     server.listen(port, () => {
       console.log(`Auth Service rodando na porta ${port}`);
     });

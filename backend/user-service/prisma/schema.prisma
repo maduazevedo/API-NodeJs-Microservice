@@ -20,4 +20,5 @@ model Users {
   cpf       String    @unique
   password  String
   deletedAt DateTime?
+  avatar    String?
 }

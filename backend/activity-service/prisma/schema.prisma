@@ -25,7 +25,9 @@ model Activities {
   completedAt      DateTime?
   isPrivate        Boolean
   creatorId        String 
-    ActivityParticipants ActivityParticipants[]       
+  type             Int
+  avatar           String
+  ActivityParticipants ActivityParticipants[]       
 }
 
 model ActivityParticipants {
