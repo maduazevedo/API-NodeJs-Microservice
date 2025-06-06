@@ -20,15 +20,15 @@ export async function findAllByFilterTypeAndOrder(userId: string, orderBy?: stri
     const activities = await prisma.activities.findMany({
         where: whereClause,
         orderBy: orderByClause,
-        include: {
-            //ActivityAddresses: true,
-            //creators: true,
-            _count: {
-                select: {
-                    ActivityParticipants: true
-                }
-            }
-        }
+        // include: {
+        //     //ActivityAddresses: true,
+        //     //creators: true,
+        //     _count: {
+        //         select: {
+        //             ActivityParticipants: true
+        //         }
+        //     }
+        // }
     });
 
     return { activities };
@@ -49,11 +49,11 @@ export async function findActivitiesUserCreatorAll(userId: string) {
             //type: true,           
             //image: true,          
             confirmationCode: true, 
-            _count: {            
-                select: {
-                    ActivityParticipants: true 
-                }
-            },
+            // _count: {            
+            //     select: {
+            //         ActivityParticipants: true 
+            //     }
+            // },
             // ActivityAddresses: {            
             //     select: {
             //         latitude: true,   
@@ -94,11 +94,11 @@ export async function findActivitiesUserParticipantAll(userId: string) {
                     description: true,
                     //type: true,
                     //image: true,
-                    _count: {
-                        select: {
-                            ActivityParticipants: true 
-                        }
-                    }, 
+                    // _count: {
+                    //     select: {
+                    //         ActivityParticipants: true 
+                    //     }
+                    // }, 
                     // ActivityAddresses: {
                     //     select: {
                     //         latitude: true,
@@ -161,32 +161,26 @@ export async function findParticipantsByActivity(activityId: string) {
     // });
 }
 
-// // 9. POST ACTIVITIES/NEW
-// export async function saveActivity(creatorId: string, title: string, description: string, scheduledDate: Date, createdAt: Date, Isprivate: boolean, confirmationCode: string) {
-//     const activity = await prisma.activities.create({
+// 9. POST ACTIVITIES/NEW
+export async function saveActivity(creatorId: string, title: string, description: string, type: number,  Isprivate: boolean, scheduledDate: Date, createdAt: Date, confirmationCode: string) {
+    const activity = await prisma.activities.create({
 
-//         data: {       
-//             title: title,          
-//             description: description,         
-//             scheduledDate,   
-//             createdAt,        
-//             isPrivate : Isprivate,       
-//             confirmationCode, 
-//             creatorId: creatorId, 
-//         },  include: {
-//             // creators: {
-//             //     select: {
-//             //         id: true,
-//             //         name: true,
-//             //         //avatar: true
-//             //     }
-//             // }
-//         }
-//     });
+        data: {       
+            title: title,          
+            description: description,         
+            type: type,
+            avatar: 'default',
+            scheduledDate,   
+            createdAt,        
+            isPrivate : Isprivate,       
+            confirmationCode, 
+            creatorId: creatorId, 
+        }, 
+    });
 
-    // return activity;
+    return activity;
 
-// }
+}
 
 // 4. GET ACTIVITUES/USER/CREATOR
 export async function findActivitiesUserCreator(creatorId: string, page: number, pageSize: number) {
@@ -239,11 +233,11 @@ export async function findActivitiesUserParticipant(userId: string, page: number
     const activities = await prisma.activities.findMany({
         where: { 
             deletedAt: null,
-            ActivityParticipants: {
-                some: {
-                    userId: userId,  
-                }
-            }
+            // ActivityParticipants: {
+            //     some: {
+            //         userId: userId,  
+            //     }
+            // }
         },
         skip,
         take: pageSize,

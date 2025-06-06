@@ -1,15 +1,17 @@
 import { Express, Router, Request } from "express";
 import { authGuard } from "../../infraestructure/middleware/auth-guard";
 import { ServerError } from "../../domain/exceptions/server-error";
-import { getByPaginatedFilterTypeAndOrder, getAllByFilterTypeAndOrder, getActivitiesUserCreator, getActivitiesUserCreatorAll, getActivitiesUserParticipant, getParticipantsByActivities, updateActivities, concludeActivities, deleteActivities} from "../../application/service/activity-service";
+import { getByPaginatedFilterTypeAndOrder, getAllByFilterTypeAndOrder, getActivitiesUserCreator, getActivitiesUserCreatorAll, getActivitiesUserParticipant, getParticipantsByActivities, updateActivities, concludeActivities, deleteActivities, createActivity} from "../../application/service/activity-service";
 import { createSubscriptionInActivity, approveParticipants, doCheckin, doUnsubscribe } from "../../application/service/activity-participant-service";
+import upload from "../../application/multer/multer";
+import { uploadImage } from "../../application/service/s3-service";
 
 export function activityController (server: Express){
-
+    
     const router = Router();
-
+    
     router.use(authGuard)
-
+    
     // router.get('/types', async(req, res) =>{
     //     try{
     //         const response = await getActivitiesTypes()
@@ -22,8 +24,27 @@ export function activityController (server: Express){
     //         }
     //     }
     // });
-    
 
+    //OK
+    router.post('/new', async(req: Request, res) =>{
+    
+        try{
+            const creatorId = res.userId as string
+            const {title, description, type, scheduledDate, isPrivate } = req.body;
+    
+            const response = await createActivity(creatorId, title, description, type, isPrivate, scheduledDate)
+            res.status(200).send(response);
+        }catch(error){
+            if (error instanceof ServerError){
+                res.status(error.statusCode).send({error: error.message})
+                return
+            }else{
+                res.status(500).send({error: "Erro inesperado. "})
+            }
+        }
+    });
+
+    //OK
     router.get('/', async(req, res) =>{
         try {
             const userId = res.userId as string
@@ -45,6 +66,7 @@ export function activityController (server: Express){
         }
     });
 
+    //OK
     router.get('/all', async (req, res) =>{
         try {
             const userId = res.userId as string
@@ -65,6 +87,7 @@ export function activityController (server: Express){
         }
     });
 
+    //OK
     router.get('/user/creator', async (req, res) =>{
         try {
             const creatorId = res.userId as string 
@@ -82,6 +105,7 @@ export function activityController (server: Express){
         }
     });
 
+    //OK
     router.get('/user/creator/all', async (req, res) =>{
         try{
             const userId = res.userId as string
@@ -96,6 +120,7 @@ export function activityController (server: Express){
         }
     });
 
+    //OK
     router.get('/user/participant', async (req, res) =>{
         try {
             const userId = res.userId as string 
@@ -134,25 +159,7 @@ export function activityController (server: Express){
     });
 
 
-    // router.post('/new', async(req: Request, res) =>{
-
-    //     try{
-    //         const creatorId = res.userId as string
-    //         const {title, description, type, address, scheduledDate, isPrivate} = req.body;
-    //         //const imgUrl = await uploadImage(req.file!)
-
-    //         const response = await createActivity(creatorId, title, description, isPrivate, scheduledDate)
-    //         res.status(200).send(response);
-    //     }catch(error){
-    //         if (error instanceof ServerError){
-    //             res.status(error.statusCode).send({error: error.message})
-    //             return
-    //         }else{
-    //             res.status(500).send({error: "Erro inesperado. "})
-    //         }
-    //     }
-    // });
-
+    //OK
     router.post('/:id/subscribe', async (req: Request, res) =>{
 
         try{
@@ -191,6 +198,7 @@ export function activityController (server: Express){
         }
     });
 
+    //OK
     router.put('/:id/conclude', async(req: Request, res)=>{
         try{
             const idCreator = res.userId as string
@@ -262,7 +270,7 @@ export function activityController (server: Express){
             }
         }
     });
-
+    //OK
     router.delete('/:id/delete', async (req, res) =>{
         try{
             const idUser = res.userId as string
@@ -280,5 +288,5 @@ export function activityController (server: Express){
         }
     });
 
-    server.use('/activities', router);
+    server.use('/activity', router);
 }
