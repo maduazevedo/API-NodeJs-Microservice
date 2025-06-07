@@ -1,9 +1,9 @@
 import { ServerError } from "../../domain/exceptions/server-error";
-import { approveParticipant, hasConfirmed, isApprovedParticipant, saveCheckin, saveSubscriptionInActivity, saveUnsubscribeInActivity, verifyConfirmationCode } from "../../infraestructure/repository/activity-participants-repository";
+import { hasConfirmed, saveCheckin, saveSubscriptionInActivity, saveUnsubscribeInActivity, verifyConfirmationCode } from "../../infraestructure/repository/activity-participants-repository";
 import {existsActivity, hasConcluded, isPrivateActivity, isTheCreatorAct, isUserInActivity } from "../../infraestructure/repository/activity-repository";
 
 
-// 10. POST/ACTIVITIES/ID/SUBSCRIBE
+// 1. POST/ACTIVITIES/ID/SUBSCRIBE
 export async function createSubscriptionInActivity(idUser: string, idActivity: string) {
 
     
@@ -39,7 +39,6 @@ export async function createSubscriptionInActivity(idUser: string, idActivity: s
 
     const response = {
         id: subscription.id,
-        subscriptionStatus: subscription.approved ? "APPROVED" : "NOT_APPROVED",
         confirmedAt: subscription.confirmedAt,
         activityId: subscription.activityId,
         userId: subscription.userId
@@ -49,37 +48,8 @@ export async function createSubscriptionInActivity(idUser: string, idActivity: s
     
 }
 
-//13. PUT ACTIVITIES/ID/APPROVE
-export async function approveParticipants(idCreator: string, participantId: string, activityId: string, approved: boolean ) {
 
-    const isCreator = await isTheCreatorAct(idCreator, activityId)
-    if(!isCreator){
-        throw new ServerError("E16 - apenas o criador da atividade pode aprovar ou negar participantes", 401)
-    }
-
-    const existsAct = await existsActivity(activityId)
-
-    if(!existsAct){
-        throw new ServerError("Atividade não encontrada. ", 404)
-    }
-
-    const existParticipant = await isUserInActivity(participantId, activityId)
-    
-    if(!existParticipant){
-        throw new ServerError("Participante não encontrado", 404)
-    }
-
-    const isPrivate = await isPrivateActivity(activityId)
-
-    if(!isPrivate){
-        throw new ServerError("Você só pode permitir a participação do usuário em atividades privadas", 401)
-    }
-    
-    return await approveParticipant(participantId, activityId, approved)
-}
-
-
-//14. PUT ACTIVITIES/ID/CHECKIN
+//2. PUT ACTIVITIES/ID/CHECKIN
 export async function doCheckin( idUser: string, idActivity: string, confirmationCode: string ) {
 
     const isConcluded = await hasConcluded(idActivity)
@@ -99,11 +69,6 @@ export async function doCheckin( idUser: string, idActivity: string, confirmatio
         throw new ServerError("ID de atividade inválido. ", 400)
     }
     
-    const isApproved = await isApprovedParticipant(idUser, idActivity)
-
-    if(!isApproved){
-        throw new ServerError ("E9 - Apenas participantes aprovados na atividade podem fazer check-in", 401)
-    }
 
     const confCode = await verifyConfirmationCode(idUser, idActivity, confirmationCode)
     if(!confCode){
@@ -115,13 +80,12 @@ export async function doCheckin( idUser: string, idActivity: string, confirmatio
         throw new ServerError("E11- Você já confirmou suas participação nessa atividade", 400)
     }
 
-    //void addAchievement(idUser, 'Check-in na Atividade', idActivity);
     return await saveCheckin(idUser, idActivity)
 
 }
 
 
-//15. PUT ACTIVITIES/ID/UNSUBSCRIBE
+//3. PUT ACTIVITIES/ID/UNSUBSCRIBE
 export async function doUnsubscribe(idUser: string, idActivity: string) {
 
     const existsAct = await existsActivity(idActivity)

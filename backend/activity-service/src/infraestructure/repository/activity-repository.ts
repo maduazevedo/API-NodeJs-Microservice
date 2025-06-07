@@ -20,15 +20,6 @@ export async function findAllByFilterTypeAndOrder(userId: string, orderBy?: stri
     const activities = await prisma.activities.findMany({
         where: whereClause,
         orderBy: orderByClause,
-        // include: {
-        //     //ActivityAddresses: true,
-        //     //creators: true,
-        //     _count: {
-        //         select: {
-        //             ActivityParticipants: true
-        //         }
-        //     }
-        // }
     });
 
     return { activities };
@@ -46,31 +37,12 @@ export async function findActivitiesUserCreatorAll(userId: string) {
             id: true,            
             title: true,          
             description: true,    
-            //type: true,           
-            //image: true,          
+            type: true,                     
             confirmationCode: true, 
-            // _count: {            
-            //     select: {
-            //         ActivityParticipants: true 
-            //     }
-            // },
-            // ActivityAddresses: {            
-            //     select: {
-            //         latitude: true,   
-            //         longitude: true  
-            //     }
-            // },
             scheduledDate: true,  
             createdAt: true,      
             completedAt: true,  
             isPrivate: true,     
-        //     creators: {           
-        //         select: {
-        //             id: true,     
-        //             name: true,    
-        //             //avatar: true  
-        //         }
-        //     },
         },
         
     });
@@ -92,76 +64,19 @@ export async function findActivitiesUserParticipantAll(userId: string) {
                     id: true,
                     title: true,
                     description: true,
-                    //type: true,
-                    //image: true,
-                    // _count: {
-                    //     select: {
-                    //         ActivityParticipants: true 
-                    //     }
-                    // }, 
-                    // ActivityAddresses: {
-                    //     select: {
-                    //         latitude: true,
-                    //         longitude: true
-                    //     }
-                    // },
+                    type: true,
                     scheduledDate: true,
                     createdAt: true,
                     completedAt: true,
                     isPrivate: true,
-                    // creatorId: {
-                    //     select: {
-                    //         id: true,
-                    //         name: true,
-                    //         //avatar: true
-                    //     }
-                    // },
                 }, 
             },
-            approved: true 
         },
     })
-    // return activities.map((item: { activityId: any, approved: boolean }) => ({
-    //     ...item.activityId, 
-    //     subscriptionStatus: item.approved ? "APPROVED" : "NOT_APPROVED" 
-    // }));
 }
 
-// 4. GET ACTIVITIES/ID/PARTICIPANTS
-export async function findParticipantsByActivity(activityId: string) {
-    const participants = await prisma.activityParticipants.findMany({
-        where: {
-            activityId: activityId, 
-            activity: {
-                deletedAt: null, 
-            },
-        },
-        select: {
-            id: true,
-            userId: true, 
-            // usersId: { 
-            //     select: {
-            //         name: true, 
-            //         //avatar: true, 
-            //     },
-            // },
-            approved: true, 
-            confirmedAt: true, 
-        },
-    });
 
-    // return participants.map((participant: { usersId: { name: string }, approved: boolean, [key: string]: any }) => {
-    //     const { usersId, approved, ...rest } = participant;
-    //     return {
-    //         ...rest,
-    //         name: usersId.name,
-    //         //avatar: usersId.avatar,
-    //         subscriptionStatus: approved ? "APPROVED" : "NOT_APPROVED", 
-    //     };
-    // });
-}
-
-// 9. POST ACTIVITIES/NEW
+// 4. POST ACTIVITIES/NEW
 export async function saveActivity(creatorId: string, title: string, description: string, type: number,  Isprivate: boolean, scheduledDate: Date, createdAt: Date, confirmationCode: string) {
     const activity = await prisma.activities.create({
 
@@ -169,7 +84,6 @@ export async function saveActivity(creatorId: string, title: string, description
             title: title,          
             description: description,         
             type: type,
-            avatar: 'default',
             scheduledDate,   
             createdAt,        
             isPrivate : Isprivate,       
@@ -182,7 +96,7 @@ export async function saveActivity(creatorId: string, title: string, description
 
 }
 
-// 4. GET ACTIVITUES/USER/CREATOR
+// 5. GET ACTIVITUES/USER/CREATOR
 export async function findActivitiesUserCreator(creatorId: string, page: number, pageSize: number) {
     const skip = (page - 1) * pageSize;
 
@@ -199,15 +113,6 @@ export async function findActivitiesUserCreator(creatorId: string, page: number,
         where: { creatorId, deletedAt: null },
         skip,
         take: pageSize,
-        include: {
-            //ActivityAddresses: true,
-            // creators: true,
-            // _count: {
-            //     select: {
-            //         ActivityParticipants: true 
-            //     }
-            // }
-        }
     });
 
         return {  
@@ -217,7 +122,8 @@ export async function findActivitiesUserCreator(creatorId: string, page: number,
             activities
         };
     } 
-    // 6. GET ACTIVITIES/USER/PARTICIPANT
+    
+// 6. GET ACTIVITIES/USER/PARTICIPANT
 export async function findActivitiesUserParticipant(userId: string, page: number, pageSize: number) {
     const skip = (page - 1) * pageSize;
 
@@ -233,23 +139,15 @@ export async function findActivitiesUserParticipant(userId: string, page: number
     const activities = await prisma.activities.findMany({
         where: { 
             deletedAt: null,
-            // ActivityParticipants: {
-            //     some: {
-            //         userId: userId,  
-            //     }
-            // }
+            ActivityParticipants: {
+                some: {
+                    userId: userId, 
+                },
+            },
         },
         skip,
         take: pageSize,
-        include: {
-            // ActivityAddresses: true,
-            // creators: true,
-            // _count: {
-            //     select: {
-            //         ActivityParticipants: true 
-            //     }
-            // }
-        }
+
     });
 
     return {
@@ -264,7 +162,7 @@ export async function findActivitiesUserParticipant(userId: string, page: number
 }
 
 
-// 11. PUT ACTIVITIES/ID/UPDATE
+// 7. PUT ACTIVITIES/ID/UPDATE
 export async function updateActivity( idActivity: string, title: string, description: string, scheduledDate: Date, isPrivate: boolean){
 
     const updatedActivity = await prisma.activities.update({
@@ -274,21 +172,13 @@ export async function updateActivity( idActivity: string, title: string, descrip
             description: description,     
             scheduledDate,     
             isPrivate : isPrivate      
-        }, include: {
-            // creators: {
-            //     select: {
-            //         id: true,
-            //         name: true,
-            //         //avatar: true
-            //     }
-            // }
-        }
+        },
     });
 
     return updatedActivity;
 }
 
-// 12. PUT ACTIVITIES/ID/CONCLUDE
+// 8. PUT ACTIVITIES/ID/CONCLUDE
 export async function conlcudeActivity(activityId: string) {
 
     const updatedActivity = await prisma.activities.update({
@@ -303,7 +193,7 @@ export async function conlcudeActivity(activityId: string) {
     return updatedActivity
 }
 
-// 16. DELETE /ACTIVITIES/ID/DELETE
+// 9. DELETE /ACTIVITIES/ID/DELETE
 export async function deleteActivity(idActivity: string) {
 
     const activity = await prisma.activities.findUnique({

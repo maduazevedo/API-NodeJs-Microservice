@@ -1,7 +1,7 @@
 import { Express, Router, Request} from "express";
 import {authGuard} from "../../infraestructure/middleware/auth-guard";
 import { ServerError } from "../../domain/exceptions/server-error";
-import { deleteUsers, getUsers, updateUserService, getUserByEmailService, updateImageService } from "../../application/service/user-service";
+import { deleteUsers, getUsers, updateUserService, updateImageService } from "../../application/service/user-service";
 import { uploadImage } from "../../application/service/s3-service";
 import upload from "../../application/multer/multer";
 
@@ -11,7 +11,8 @@ export function userController (server: Express){
     const router = Router();
 
     router.use(authGuard)
-    
+
+    //1. GET user
     router.get('/', async (req, res) =>{
         try{
 
@@ -28,43 +29,7 @@ export function userController (server: Express){
             }
         }
     });
-
-
-    // router.get('/preferences', async (req, res) =>{
-    //     try{
-    //     const id = res.userId as string;
-    //     const preferencesData = await getUsersPreferences(id)
-    //     res.status(200).send(preferencesData);
-
-    // }catch(error){
-    //     if (error instanceof ServerError){
-    //         res.status(error.statusCode).send({error: error.message})
-    //         return
-    //     }else{
-    //         res.status(500).send({error: "Erro inesperado. "})
-    //     }
-    // }
-    // });
-
-    
-    // router.post('/preferences/define',  async (req: Request, res) =>{
-    //     try{
-    //     const id = res.userId as string;
-    //     const preferences = req.body;
-    //     await defineUserPreferences(preferences, id)
-    //     res.status(200).send({message: 'Preferencias atualizadas com sucesso. '});
-        
-    // }catch(error){
-    //     if (error instanceof ServerError){
-    //         res.status(error.statusCode).send({error: error.message})
-    //         return
-    //     }else{
-    //         res.status(500).send({error: "Erro inesperado. "})
-    //     }
-    // }
-    // });
-
-
+    //2. PUT user/avatar
     router.put('/avatar', upload.single("avatar"), async (req: Request, res)=>{
         try{
             const userId = res.userId as string
@@ -77,19 +42,19 @@ export function userController (server: Express){
                 res.status(error.statusCode).send({error: error.message})
                 return
             }else{
-                res.status(500).send({error: "Erro inesperado. "})
+                res.status(500).send({error: error instanceof Error ? error.message : "Erro inesperado. "})
             }
         }
         
     });
     
-
+    //3. PUT user/update
     router.put('/update', async (req: Request, res)=>{
 
         try{
             const id = res.userId as string;
-            const {name, email, password} = req.body;
-            const userData = await updateUserService(name, email, password, id)
+            const {name, email, cpf, password} = req.body;
+            const userData = await updateUserService(name, email, cpf, password, id)
             res.status(200).send(userData);
             
         }catch(error){
@@ -101,7 +66,7 @@ export function userController (server: Express){
             }
         }
     });
-
+    //4. DELETE user/deactivate
     router.delete('/deactivate', async (req, res) =>{
 
         try{
@@ -118,7 +83,6 @@ export function userController (server: Express){
             }
         }
     });
-
 
     server.use('/user', router);
 }

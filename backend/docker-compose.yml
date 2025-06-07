@@ -54,7 +54,6 @@ services:
     build: ./auth-service
     container_name: auth-service
     environment:
-      - JWT_SECRET=minhaChaveSecretaSuperSegura123!
       - RABBITMQ_HOST=rabbitmq
       - RABBITMQ_USER=guest
       - RABBITMQ_PASS=guest
@@ -66,9 +65,6 @@ services:
           condition: service_healthy
         user-db:
           condition: service_healthy
-
-   
-
 
   activity-service:
     build: ./activity-service

@@ -1,7 +1,7 @@
 import prisma from '../prisma/prisma-client'
 
 
-// 1. POST AUTH/REGISTER
+// 1. POST auth/register
 export async function saveUser(name: string, email: string, cpf: string, password: string) {
     return await prisma.users.create({
         data:{
@@ -13,7 +13,7 @@ export async function saveUser(name: string, email: string, cpf: string, passwor
     })
 }
 
-// 3. GET USER
+// 2. GET user
 export async function getUser(id: string){
     return await prisma.users.findUnique({
         where:{
@@ -23,45 +23,7 @@ export async function getUser(id: string){
     });
 }
 
-// // 4. GET USER/PREFERENCES
-// export async function getUserPreferences(userId: string) {
-//     const preferencesData = await prisma.preferences.findMany({
-//         where:{
-//             userId
-//         },
-//         select: {
-//             typesId: {
-//                 select: {
-//                     id: true,
-//                     name: true,
-//                     description: true,
-//                 },
-//             },
-//         }, 
-//     })
-//     return preferencesData.map(item => ({
-//         typeId: item.typesId.id,
-//         typeName: item.typesId.name,
-//         typeDescription: item.typesId.description,
-//     }));
-    
-// }
-
-// // 5. POST USER/PREFERENCES/DEFINE
-// export async function definePreferences(typeID: string[], id: string) {
-
-//     const preferencesData = typeID.map((type) => ({
-//         userId: id, 
-//         typeId: type,  
-//     }));
-
-//     await prisma.preferences.createMany({
-//         data: preferencesData, 
-//     });
-
-// }
-
-// 6 . PUT USER/AVATAR
+// 3 . PUT user/avatar
 export async function updateImage(avatar: string, idUser: string) {
     await prisma.users.update({
         data: {
@@ -73,12 +35,13 @@ export async function updateImage(avatar: string, idUser: string) {
     });
 }
 
-// 7. PUT USER/UPDATE
-export async function updateUser(name:string, email: string, password:string, id: string){
+// 4. PUT user/update
+export async function updateUser(name:string, email: string, cpf: string, password:string, id: string){
     return await prisma.users.update({
         data: {
             name,
             email,
+            cpf,
             password,
         },
         where: {
@@ -87,7 +50,7 @@ export async function updateUser(name:string, email: string, password:string, id
     })
 }
 
-//8. DELETE USER/DEACTIVATE
+//5. DELETE user/deactivate
 export async function deleteUser(id: string) {
     return await prisma.users.update({
         where: {
@@ -115,8 +78,6 @@ export async function getUserByPassword(password: string, userEmail: string) {
             email: userEmail 
         }
     });
-
-
     if (user && user.password === password) {
         return user; 
     } else {
@@ -143,26 +104,3 @@ export async function getDeletedAtById(id: string) {
         });
             return user ? !!user.deletedAt : false;
     };
-
-
-
-// export async function getAchievementsById(userId: string) {
-//     const userAchievements = await prisma.userAchievements.findMany({
-//         where: {
-//             userId: userId,
-//         },
-//         select: {
-//             achievements: {
-//                 select: {
-//                     name: true,
-//                     criterion: true,
-//                 },
-//             },
-//         },
-//     });
-
-//     return userAchievements.map(item => ({
-//         name: item.achievements.name,
-//         criterion: item.achievements.criterion,
-//     }));
-// }

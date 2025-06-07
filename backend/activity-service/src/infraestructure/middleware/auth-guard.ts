@@ -4,6 +4,7 @@ import dotenv from 'dotenv';
 dotenv.config();
 
 const jwtSecret = process.env.JWT_SECRET!;
+console.log("JWT Secret activity:", jwtSecret);
 
 //pegando o user da sessao
 declare module 'express-serve-static-core'{

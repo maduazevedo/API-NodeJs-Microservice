@@ -26,10 +26,11 @@ export async function uploadImage (file: Express.Multer.File) {
     Bucket: bucketName,
     Key: file.originalname,
     Body: file.buffer,
-    ContenType: file.mimetype,
+    ContentType: file.mimetype,
 
   };
 
+  console.log("Iniciando o upload do arquivo:", uploadParams);
   await s3.send(new PutObjectCommand(uploadParams));
   return `${process.env.S3_ENDPOINT}/${bucketName}/${file.originalname}`;
   

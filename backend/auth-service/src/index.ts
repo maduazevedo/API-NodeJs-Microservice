@@ -1,7 +1,7 @@
 import express from "express";
 import { json } from "express";
 import dotenv from "dotenv";
-import { connectRabbitMQ } from "./infraestructure/messageBroker";
+import { connectRabbitMQ } from "./infraestructure/messages/messageBroker";
 import { AuthController } from "./presentation/controller/auth-controller";
 
 const server = express();
