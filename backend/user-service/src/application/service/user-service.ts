@@ -7,49 +7,25 @@ import jwt from "jsonwebtoken";
 const jwtSecret = process.env.JWT_SECRET!;
 
 
-// 3 . GET USER
+// 1. GET user
 export async function getUsers(id : string) {
 
     const user = await getUser(id)
-
-    //const achievements = await getAchievementsById(id);
     
     const response = {
         id: user!.id,
         name: user!.name,
         email: user!.email,
         cpf: user!.cpf,
-        //avatar: user!.avatar,
-        //xp: user!.xp,
-        //level: user!.level,
-        //achievements, 
+        avatar: user!.avatar,
     };
 
     return response;
 }
 
-// // 4 . GET USER/PREFERENCES
-// export async function getUsersPreferences(id: string) {
-    
-//     const preferences  = getUserPreferences(id)
-//     return preferences
-    
-// }
-
-// 5. POST USER/PREFERENCES/DEFINE
-// export async function defineUserPreferences (typeId: string[], id: string) {
-    
-
-//     const searchId = await getActivityTypeById(typeId)
-//     if(searchId == false){
-//         throw new ServerError("Um ou mais IDs informados são inválidos. ", 400)
-//     }
-
-//     return await definePreferences(typeId, id)
-// }
-
-// // 6. UPDATE USER/AVATAR
+// 2. PUT user/avatar
 export async function updateImageService(avatar: string, id: string) {
+
     const regex = /\.(jpg|png)$/i;
     const result = regex.test(avatar);
 
@@ -57,24 +33,28 @@ export async function updateImageService(avatar: string, id: string) {
         throw new ServerError("E2 - A imagem deve ser um arquivo PNG ou JPG.", 400);
     }
 
-    //void addAchievement(id, 'Alterar Foto de Perfil');
-
     return await updateImage(avatar, id);
 }
 
-// 7. UPDATE USER/UPDATE
-export async function updateUserService(name: string, email: string, password: string,  id: string){
+// 3. PUT user/update
+export async function updateUserService(name: string, email: string, cpf: string, password: string,  id: string){
     
-    const userExt = await getUserByEmail(email)
+    const userByEmail = await getUserByEmail(email)
 
-    if (userExt || await getUserByPassword(email, password) ) {
-        throw new ServerError ("E3 - O email ou CPF informado já pertence a outro usuário. ", 409);
+    if (userByEmail) {
+        throw new ServerError ("E3 - O email informado já pertence a outro usuário. ", 409);
+    }
+
+    const userByCPF = await getUserByCPF(cpf);    
+
+    if (userByCPF) {
+            throw new ServerError("E3 - O CPF informado já pertence a outro usuário.", 409);
     }
     
     const encryptedPassword = await bcrypt.hash(password, 10);
     password = encryptedPassword;
 
-    const user =  await updateUser(name, email, password, id)
+    const user =  await updateUser(name, email, cpf, password, id)
     
     const newUser = {
         id: user.id,
@@ -82,17 +62,16 @@ export async function updateUserService(name: string, email: string, password: s
         email: user.email,
         cpf: user.cpf,
         avatar: user.avatar,
-        //xp: user.xp,
-        //level: user.level
     }
     return newUser
 }
 
-// 8. DELETE USER/DEACTIVATE
+// 4. DELETE user/deactivate
 export async function deleteUsers(id:string) {
 
     return await deleteUser(id)
 }
+
 
 export async function getUserByEmailService(email: string) {
     const user = await getUserByEmail(email);

@@ -26,13 +26,11 @@ model Activities {
   isPrivate        Boolean
   creatorId        String 
   type             Int
-  avatar           String
   ActivityParticipants ActivityParticipants[]       
 }
 
 model ActivityParticipants {
   id          String     @id @default(uuid())
-  approved    Boolean    @default(false)
   confirmedAt DateTime?
   userId     String
   activityId String

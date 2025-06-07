@@ -1,12 +1,13 @@
 import { ServerError } from "../../domain/exceptions/server-error";
 import UserData from "../../domain/types/user-data";
-import bcrypt from 'bcrypt';
 import jwt from "jsonwebtoken";
-import { getChannel } from '../../infraestructure/messageBroker';
+import { getChannel } from '../../infraestructure/messages/messageBroker';
 import { v4 as uuidv4 } from 'uuid';
 import { Channel } from "amqplib";
+import dotenv from 'dotenv';
+dotenv.config();
 
-const jwtSecret = process.env.JWT_SECRET!
+const jwtSecret = process.env.JWT_SECRET!;
 
 
 //1. POST AUTH/REGISTER
@@ -54,7 +55,7 @@ export async function loginUser(data: UserData){
 
 
 
-// exemplo: src/messaging/rabbitmq.ts (ou onde você colocou o código da fila)
+//sendawit do rabbitmq
 export async function sendAndWait(
     channel: Channel,
     queueName: string,
@@ -63,32 +64,32 @@ export async function sendAndWait(
 ): Promise<UserData> {
     return new Promise(async (resolve, reject) => {
         try {
-            // ✅ Cria uma replyQueue exclusiva e temporária
+            // Cria uma replyQueue exclusiva e temporária
             const { queue: replyQueue } = await channel.assertQueue('', {
                 exclusive: true,
                 autoDelete: true
             });
 
-            // ✅ Consome a replyQueue
+            // Consome a replyQueue
             const consumerTag = await channel.consume(replyQueue, msg => {
                 if (msg?.properties.correlationId === correlationId) {
                     const userData = JSON.parse(msg.content.toString()) as UserData;
                     channel.ack(msg);
 
-                    // ✅ Cancela o consumer após receber a resposta
+                    // Cancela o consumer após receber a resposta
                     channel.cancel(consumerTag.consumerTag);
                     clearTimeout(timeout);
                     resolve(userData);
                 }
-            }, { noAck: false }); // ✅ sempre com noAck: false
+            }, { noAck: false }); // sempre com noAck: false
 
-            // ✅ Envia a mensagem
+            // Envia a mensagem
             channel.sendToQueue(queueName, Buffer.from(JSON.stringify(data)), {
                 correlationId,
                 replyTo: replyQueue
             });
 
-            // ✅ Timeout de segurança
+            // Timeout de segurança
             const timeout = setTimeout(() => {
                 channel.cancel(consumerTag.consumerTag);
                 reject(new Error('Timeout na resposta do RabbitMQ'));
