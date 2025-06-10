@@ -19,7 +19,15 @@ const montserrat = Montserrat({
 });
 
 export const metadata: Metadata = {
-  title: "Projeto DevWeb2",
+  title: "MotionLab",
+  authors: [
+    {
+      name: "Arthur de Oliveira",
+    },
+    {
+      name: "Maria Eduarda",
+    },
+  ],
   description: "Projeto criado por Arthur de Oliveira e Maria Eduarda",
 };
 

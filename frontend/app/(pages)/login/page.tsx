@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import InputComponent from "@/app/components/Input";
 import { Button } from "@/app/components/Button";
 import Link from "next/link";
+import Logo from "@/app/components/Logo";
 
 export default function LoginPage() {
   const router = useRouter();
@@ -37,9 +38,7 @@ export default function LoginPage() {
       console.log("Login realizado com sucesso:", data);
 
       localStorage.setItem("token", data.token);
-
-      // Redireciona se o login for bem-sucedido
-      router.push("/Ativity/My"); // ou /dashboard, conforme sua aplicação
+      router.push("/Ativity/My");
     } catch (error) {
       console.error("Erro na requisição:", error);
       setError("Erro ao conectar com o servidor.");
@@ -47,19 +46,11 @@ export default function LoginPage() {
   };
 
   return (
-    <main
-      className="min-h-dvh p-4 flex items-center justify-center"
-      style={{
-        backgroundImage: "url('/bg.jpg')",
-        backgroundSize: "cover",
-        backgroundPosition: "center",
-        backgroundAttachment: "fixed",
-      }}
-    >
-      <div className="w-full max-w-md bg-white rounded-2xl shadow-xl overflow-hidden">
-        <div className="bg-gradient-to-r from-blue-600 to-indigo-700 p-6 text-center">
-          <h1 className="text-2xl font-bold text-white">Bem-vindo</h1>
-          <p className="text-blue-100 mt-1">Faça login para continuar</p>
+    <main className="min-h-screen bg-gray-100 p-4 flex items-center justify-center">
+      <div className="w-full max-w-md bg-white rounded-xl shadow-md overflow-hidden border border-gray-200">
+        <div className="p-6 flex flex-col items-center gap-2">
+          <Logo />
+          <h2 className="text-xl font-semibold text-gray-700 mt-1">Login</h2>
         </div>
 
         <form onSubmit={handleSubmit} className="p-8 flex flex-col gap-6">
@@ -91,7 +82,7 @@ export default function LoginPage() {
 
           <Button
             type="submit"
-            className="w-full py-3 bg-gradient-to-r from-blue-600 to-indigo-700 text-white rounded-lg"
+            className="w-full py-3 bg-gradient-to-r from-blue-600 to-indigo-700 text-white rounded-lg hover:opacity-90 transition"
           >
             Entrar
           </Button>

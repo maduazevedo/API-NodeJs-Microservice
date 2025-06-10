@@ -51,22 +51,14 @@ export default function RegisterPage() {
   };
 
   return (
-    <main
-      className="min-h-dvh bg-gradient-to-br from-blue-50 to-indigo-100 p-4 flex items-center justify-center"
-      style={{
-        backgroundImage: "url('/bg.jpg')",
-        backgroundSize: "cover",
-        backgroundPosition: "center",
-        backgroundAttachment: "fixed",
-      }}
-    >
-      <div className="w-1/2 bg-white rounded-2xl shadow-xl overflow-hidden">
-        <div className="bg-gradient-to-r from-blue-600 to-indigo-700 p-6 text-center">
-          <h1 className="text-2xl font-bold text-white">Crie sua conta</h1>
+    <main className="min-h-screen bg-gray-100 p-4 flex items-center justify-center">
+      <div className="w-full max-w-xl bg-white rounded-xl shadow-md border border-gray-200 overflow-hidden">
+        <div className="p-6 flex flex-col items-center">
+          <h2 className="text-2xl font-semibold text-gray-700">Cadastro</h2>
         </div>
 
         <form onSubmit={handleSubmit} className="p-8 flex flex-col gap-6">
-          <div className="grid grid-cols-2 gap-4">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <InputComponent
               type="text"
               placeholder="John Doe"
@@ -81,8 +73,8 @@ export default function RegisterPage() {
             <InputComponent
               type="text"
               maxLength={11}
-              placeholder="123.123.123-12"
-              label="Cpf"
+              placeholder="12312312312"
+              label="CPF"
               id="cpf"
               name="cpf"
               required
@@ -126,12 +118,12 @@ export default function RegisterPage() {
 
           <Button
             type="submit"
-            className="w-full py-3 bg-gradient-to-r from-blue-600 to-indigo-700 hover:from-blue-700 hover:to-indigo-800 text-white font-medium rounded-lg shadow-md transition-all duration-300"
+            className="w-full py-3 bg-gradient-to-r from-blue-600 to-indigo-700 text-white rounded-lg hover:opacity-90 transition"
           >
             Criar conta
           </Button>
 
-          <div className="text-center text-sm text-gray-500 mt-4">
+          <div className="text-center text-sm text-gray-600 mt-4">
             Já tem uma conta?{" "}
             <Link
               href="/login"
