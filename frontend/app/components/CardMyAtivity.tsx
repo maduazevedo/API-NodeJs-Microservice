@@ -77,6 +77,7 @@ export default function MyActivityCardComponent({
   useEffect(() => {
     if (open) {
       fetch(`/api/activities/${localActivity.id}/participants`)
+        // TODO: Verificar se essa é a URL correta para buscar participantes de uma atividade
         .then((res) => res.json())
         .then((data: Participant[]) => setParticipants(data))
         .catch((err) => console.error("Erro ao carregar participantes", err));
@@ -86,7 +87,8 @@ export default function MyActivityCardComponent({
   const handleDelete = async () => {
     setIsDeleting(true);
     try {
-      const res = await fetch(`/api/activities/${localActivity.id}`, {
+      const res = await fetch(`URL DELETAR ATIVIDADE`, {
+        // TODO: Substituir pela URL correta da API que deleta uma atividade
         method: "DELETE",
       });
       if (!res.ok) throw new Error("Erro ao excluir atividade");
@@ -101,7 +103,8 @@ export default function MyActivityCardComponent({
   const handleComplete = async () => {
     setIsCompleting(true);
     try {
-      const res = await fetch(`/api/activities/${localActivity.id}/complete`, {
+      const res = await fetch(`URL COMPLETAR ATIVIDADE`, {
+        // TODO: Substituir pela URL correta da API que marca uma atividade como concluída
         method: "PUT",
       });
       if (!res.ok) throw new Error("Erro ao concluir atividade");
@@ -126,7 +129,6 @@ export default function MyActivityCardComponent({
       <div
         className={`group relative overflow-hidden rounded-lg border ${cardBorder} ${cardBackground} shadow-sm transition-all duration-200 hover:shadow-md`}
       >
-        {/* Selo verde de concluído no canto superior direito */}
         {localActivity.completedAt && (
           <div
             className="absolute top-2 right-2 text-green-600"
@@ -137,7 +139,6 @@ export default function MyActivityCardComponent({
         )}
 
         <div className="p-4">
-          {/* Título e label Privado lado a lado */}
           <div className="flex items-center mb-1 gap-2">
             <h3
               onClick={() => setOpen(true)}

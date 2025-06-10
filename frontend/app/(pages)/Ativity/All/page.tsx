@@ -37,9 +37,9 @@ export default function Home({ userId }: { userId: string }) {
   const fetchActivities = async () => {
     setLoading(true);
     try {
-      const response = await fetch(
-        `/api/activities?sort=${sortOrder}&types=${selectedTypes.join(",")}`
-      );
+      // 🔄 Buscar atividades do backend
+      // ⬅️ Esta URL deve responder com todas as atividades registradas (GET /api/activities)
+      const response = await fetch("/api/activities");
       const data = await response.json();
       setActivities(data);
     } catch (error) {

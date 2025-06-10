@@ -64,7 +64,7 @@ export default function CardComponent({
     setIsParticipating(true);
 
     try {
-      //url de participação da atividade
+      // TODO: Substituir pela URL correta da API que registra a participação em uma atividade
       const response = await fetch("COLOCAR URL", {
         method: "POST",
         headers: { "Content-Type": "application/json" },

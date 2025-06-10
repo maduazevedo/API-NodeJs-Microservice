@@ -40,11 +40,14 @@ export default function CreateActivityModal({
 
   const handleSubmit = async () => {
     setIsSubmitting(true);
-    const res = await fetch("/api/activities", {
+
+    const res = await fetch("URL CRIAR ATIVIDADE", {
+      // TODO: Substituir pela URL correta da API que cria uma nova atividade
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ ...form }),
     });
+
     if (res.ok) {
       const data = await res.json();
       onCreate(data);
@@ -52,9 +55,9 @@ export default function CreateActivityModal({
     } else {
       console.error("Erro ao criar");
     }
+
     setIsSubmitting(false);
   };
-
   if (!isOpen) return null;
 
   return (
