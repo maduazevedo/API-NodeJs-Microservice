@@ -4,7 +4,7 @@ import { useEffect, useState, useRef } from "react";
 import Header from "@/app/components/Header";
 import AsideMenu from "@/app/components/AsideMenu";
 import MainContent from "@/app/components/MainContent";
-import { FiEdit, FiSave, FiCamera, FiX, FiCheck } from "react-icons/fi";
+import { FiEdit, FiSave, FiCamera, FiX } from "react-icons/fi";
 
 interface User {
   avatar: string;
@@ -126,14 +126,13 @@ export default function ProfilePage() {
       <Header />
       <main className="flex pt-20 gap-4">
         <AsideMenu />
-        <MainContent>
-          <div className="text-gray-800 flex flex-col items-center space-y-6 ">
-            <div className="w-full  flex justify-between items-center">
-              <h1 className="text-2xl font-bold">Perfil</h1>
+        <MainContent title="Perfil">
+          <div className="text-gray-800 flex flex-col items-center space-y-6">
+            <div className="w-full mt-0 flex justify-end items-center">
               {!editMode ? (
                 <button
                   onClick={handleEditClick}
-                  className="flex items-center cursor-pointer gap-2 px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition-colors"
+                  className="flex items-center cursor-pointer gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
                 >
                   <FiEdit size={18} />
                   Editar Perfil
@@ -180,7 +179,7 @@ export default function ProfilePage() {
                       <>
                         <button
                           onClick={triggerFileInput}
-                          className="absolute bottom-2 right-2 bg-indigo-600 text-white p-2 rounded-full hover:bg-indigo-700 transition-colors shadow-md"
+                          className="absolute bottom-2 right-2 bg-blue-600 text-white p-2 rounded-full hover:bg-blue-700 transition-colors shadow-md"
                         >
                           <FiCamera size={20} />
                         </button>
@@ -199,7 +198,7 @@ export default function ProfilePage() {
                 <div className="flex-1 space-y-6">
                   {isLoading && !user ? (
                     <div className="flex justify-center items-center h-40">
-                      <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-indigo-500"></div>
+                      <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-blue-500"></div>
                     </div>
                   ) : user ? (
                     <>
@@ -213,7 +212,7 @@ export default function ProfilePage() {
                             name="name"
                             value={tempUser?.name || ""}
                             onChange={handleInputChange}
-                            className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 outline-none transition"
+                            className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition"
                           />
                         ) : (
                           <p className="text-lg text-gray-800">{user.name}</p>
@@ -230,7 +229,7 @@ export default function ProfilePage() {
                             name="email"
                             value={tempUser?.email || ""}
                             onChange={handleInputChange}
-                            className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 outline-none transition"
+                            className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition"
                           />
                         ) : (
                           <p className="text-lg text-gray-800">{user.email}</p>
@@ -247,7 +246,7 @@ export default function ProfilePage() {
                             name="cpf"
                             value={tempUser?.cpf || ""}
                             onChange={handleInputChange}
-                            className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 outline-none transition"
+                            className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition"
                           />
                         ) : (
                           <p className="text-lg text-gray-800">{user.cpf}</p>
@@ -264,7 +263,7 @@ export default function ProfilePage() {
                             name="password"
                             value={tempUser?.password || ""}
                             onChange={handleInputChange}
-                            className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 outline-none transition"
+                            className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition"
                             placeholder="Digite sua nova senha"
                           />
                         ) : (

@@ -1,21 +1,142 @@
+"use client";
+
+import { useEffect, useState } from "react";
 import Header from "@/app/components/Header";
 import AsideMenu from "@/app/components/AsideMenu";
 import MainContent from "@/app/components/MainContent";
+import MyActivityCardComponent from "@/app/components/CardMyAtivity";
+import CreateActivityModal from "@/app/components/CreateActivityModal";
 
-export default function Home() {
+interface Activity {
+  id: string;
+  title: string;
+  description: string;
+  confirmationCode: string;
+  scheduledDate: string;
+  createdAt: string;
+  deletedAt: string | null;
+  completedAt: string | null;
+  isPrivate: boolean;
+  creatorId: string;
+  type: number;
+}
+
+export default function MyActivitiesPage() {
+  const [activities, setActivities] = useState<Activity[]>([]);
+  const [filter, setFilter] = useState<"all" | "done" | "todo">("all");
+  const [isCreateOpen, setIsCreateOpen] = useState(false);
+  const [loading, setLoading] = useState(true);
+
+  // 🔄 Buscar atividades do backend
+  useEffect(() => {
+    async function fetchActivities() {
+      try {
+        const res = await fetch("/api/activities");
+        const data = await res.json();
+        setActivities(data);
+      } catch (error) {
+        console.error("Erro ao buscar atividades:", error);
+      } finally {
+        setLoading(false);
+      }
+    }
+
+    fetchActivities();
+  }, []);
+
+  // ➕ Criar nova atividade
+  async function handleCreate(newAct: Activity) {
+    try {
+      const res = await fetch("/api/activities", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(newAct),
+      });
+
+      const created = await res.json();
+      setActivities((prev) => [created, ...prev]);
+    } catch (error) {
+      console.error("Erro ao criar atividade:", error);
+    }
+  }
+
+  // ❌ Excluir atividade
+  async function handleDelete(id: string) {
+    try {
+      await fetch(`/api/activities/${id}`, {
+        method: "DELETE",
+      });
+
+      setActivities((prev) => prev.filter((act) => act.id !== id));
+    } catch (error) {
+      console.error("Erro ao excluir atividade:", error);
+    }
+  }
+
+  const filtered = activities.filter(
+    (act) =>
+      filter === "all" ||
+      (filter === "done" && act.completedAt) ||
+      (filter === "todo" && !act.completedAt)
+  );
+
   return (
     <div className="bg-gray-50 min-h-screen">
       <Header />
-
       <main className="flex pt-20 gap-4">
         <AsideMenu />
-
-        <MainContent>
-          <div className="space-y-6 text-gray-800">
-            <h1 className="text-2xl font-bold">Minhas atividades</h1>
+        <MainContent title="Minhas Atividades">
+          <div className="flex justify-between mb-4">
+            <div className="space-x-2">
+              {["all", "todo", "done"].map((f) => (
+                <button
+                  key={f}
+                  onClick={() => setFilter(f as any)}
+                  className={`px-4 py-2 rounded-full cursor-pointer transition ${
+                    filter === f
+                      ? "bg-blue-600 text-white"
+                      : "bg-gray-200 text-gray-800 hover:bg-gray-300"
+                  }`}
+                >
+                  {f === "all"
+                    ? "Todas"
+                    : f === "todo"
+                    ? "Não concluídas"
+                    : "Concluídas"}
+                </button>
+              ))}
+            </div>
+            <button
+              onClick={() => setIsCreateOpen(true)}
+              className="px-4 py-2 bg-blue-600 cursor-pointer text-white rounded-lg hover:bg-blue-700 transition"
+            >
+              + Criar Atividade
+            </button>
           </div>
+
+          {loading ? (
+            <p>Carregando atividades...</p>
+          ) : (
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+              {filtered.map((a) => (
+                <MyActivityCardComponent
+                  key={a.id}
+                  activity={a}
+                  onDelete={handleDelete}
+                />
+              ))}
+            </div>
+          )}
         </MainContent>
       </main>
+
+      <CreateActivityModal
+        isOpen={isCreateOpen}
+        onClose={() => setIsCreateOpen(false)}
+        onCreate={handleCreate}
+      />
     </div>
   );
 }

@@ -37,31 +37,13 @@ export default function Home({ userId }: { userId: string }) {
   const fetchActivities = async () => {
     setLoading(true);
     try {
-      const token = localStorage.getItem("token");
-      if (!token) {
-        console.error("Token de autenticação não encontrado.");
-        return;
-      }
-
-      const res = await fetch(
-        `https://SEU_BACKEND_URL.com/activities?order=${sortOrder}`,
-        {
-          method: "GET",
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${token}`,
-          },
-        }
+      const response = await fetch(
+        `/api/activities?sort=${sortOrder}&types=${selectedTypes.join(",")}`
       );
-
-      if (!res.ok) {
-        throw new Error("Erro ao buscar atividades");
-      }
-
-      const data = await res.json();
+      const data = await response.json();
       setActivities(data);
     } catch (error) {
-      console.error("Erro na requisição:", error);
+      console.error("Error fetching activities:", error);
     } finally {
       setLoading(false);
     }
@@ -80,15 +62,8 @@ export default function Home({ userId }: { userId: string }) {
   const isTypeSelected = (type: number) =>
     selectedTypes.length === 0 || selectedTypes.includes(type);
 
-  const groupedActivities = activities.reduce<Record<number, Activity[]>>(
-    (acc, activity) => {
-      if (!acc[activity.type]) {
-        acc[activity.type] = [];
-      }
-      acc[activity.type].push(activity);
-      return acc;
-    },
-    {}
+  const filteredActivities = activities.filter((act) =>
+    isTypeSelected(act.type)
   );
 
   return (
@@ -97,13 +72,8 @@ export default function Home({ userId }: { userId: string }) {
 
       <main className="flex pt-20 gap-4">
         <AsideMenu />
-
-        <MainContent>
+        <MainContent title="Atividades">
           <div className="flex flex-col gap-4 mb-6">
-            <div className="flex items-center justify-between">
-              <h1 className="text-2xl font-bold text-gray-800">Atividades</h1>
-            </div>
-
             <div className="flex flex-wrap gap-2">
               <button
                 onClick={() => setSelectedTypes([])}
@@ -138,39 +108,19 @@ export default function Home({ userId }: { userId: string }) {
 
           {loading ? (
             <p>Carregando atividades...</p>
-          ) : activities.length === 0 ? (
+          ) : filteredActivities.length === 0 ? (
             <p>Nenhuma atividade encontrada.</p>
           ) : (
-            Object.entries(activityTypeMap).map(([type, { name, color }]) => {
-              const typedActivities = groupedActivities[parseInt(type)] || [];
-
-              if (
-                !isTypeSelected(parseInt(type)) ||
-                typedActivities.length === 0
-              )
-                return null;
-
-              return (
-                <section key={type} className="mb-10">
-                  <h2
-                    className={`text-xl font-semibold mb-4 px-2 py-1 inline-block rounded ${color}`}
-                  >
-                    {name}
-                  </h2>
-
-                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 p-4">
-                    {typedActivities.map((act) => (
-                      <CardComponent
-                        key={act.id}
-                        activity={act}
-                        userId={userId}
-                        onParticipate={() => {}}
-                      />
-                    ))}
-                  </div>
-                </section>
-              );
-            })
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 p-4">
+              {filteredActivities.map((act) => (
+                <CardComponent
+                  key={act.id}
+                  activity={act}
+                  userId={userId}
+                  onParticipate={() => {}}
+                />
+              ))}
+            </div>
           )}
         </MainContent>
       </main>
