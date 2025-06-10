@@ -139,10 +139,10 @@ export default function ProfilePage() {
                   Editar Perfil
                 </button>
               ) : (
-                <div className="flex gap-2">
+                <div className="flex gap-10">
                   <button
                     onClick={handleCancelClick}
-                    className="flex items-center gap-2 px-4 py-2 bg-gray-200 text-gray-800 rounded-lg hover:bg-gray-300 transition-colors"
+                    className="flex items-center cursor-pointer  px-4 py-2 text-gray-800 rounded-lg hover:bg-red-100 transition-colors"
                   >
                     <FiX size={18} />
                     Cancelar
@@ -150,7 +150,7 @@ export default function ProfilePage() {
                   <button
                     onClick={handleSaveClick}
                     disabled={isLoading}
-                    className="flex items-center gap-2 px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors disabled:opacity-70"
+                    className="flex items-center cursor-pointer gap-2 px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors disabled:opacity-70"
                   >
                     <FiSave size={18} />
                     {isLoading ? "Salvando..." : "Salvar Alterações"}
@@ -194,11 +194,6 @@ export default function ProfilePage() {
                       </>
                     )}
                   </div>
-                  {editMode && (
-                    <span className="text-sm text-gray-500 text-center">
-                      Clique no ícone para alterar a foto
-                    </span>
-                  )}
                 </div>
 
                 <div className="flex-1 space-y-6">

@@ -1,7 +1,7 @@
-'use client';
+"use client";
 
-import { useRouter, usePathname } from 'next/navigation';
-import { FiList, FiGrid, FiUser, FiLogOut } from 'react-icons/fi';
+import { useRouter, usePathname } from "next/navigation";
+import { FiList, FiGrid, FiUser, FiLogOut } from "react-icons/fi";
 
 export default function AsideMenu() {
   const router = useRouter();
@@ -9,19 +9,19 @@ export default function AsideMenu() {
 
   const menuItems = [
     {
-      label: 'Minhas Atividades',
+      label: "Minhas Atividades",
       icon: <FiList className="text-xl" />,
-      path: '/Ativity/My',
+      path: "/Ativity/My",
     },
     {
-      label: 'Todas Atividades',
+      label: "Atividades",
       icon: <FiGrid className="text-xl" />,
-      path: '/Ativity/All',
+      path: "/Ativity/All",
     },
     {
-      label: 'Perfil',
+      label: "Perfil",
       icon: <FiUser className="text-xl" />,
-      path: '/profile',
+      path: "/profile",
     },
   ];
 
@@ -37,7 +37,7 @@ export default function AsideMenu() {
               key={index}
               onClick={() => router.push(item.path)}
               className={`w-full flex items-center gap-3 px-4 py-3 rounded-xl transition-all cursor-pointer
-                ${isActive ? 'bg-blue-600 text-white' : 'hover:bg-blue-100'}`}
+                ${isActive ? "bg-blue-600 text-white" : "hover:bg-blue-100"}`}
             >
               {item.icon}
               <span className="font-medium">{item.label}</span>
@@ -49,7 +49,7 @@ export default function AsideMenu() {
       {/* Botão de logout */}
       <div>
         <button
-          onClick={() => router.push('/login')}
+          onClick={() => router.push("/login")}
           className="w-full flex items-center gap-3 px-4 py-3 rounded-xl hover:bg-red-100 text-red-600 transition-all cursor-pointer"
         >
           <FiLogOut className="text-xl" />

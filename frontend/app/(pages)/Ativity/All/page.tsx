@@ -32,13 +32,12 @@ export default function Home({ userId }: { userId: string }) {
   const [activities, setActivities] = useState<Activity[]>([]);
   const [sortOrder, setSortOrder] = useState<"latest" | "oldest">("latest");
   const [loading, setLoading] = useState(true);
+  const [selectedTypes, setSelectedTypes] = useState<number[]>([]);
 
   const fetchActivities = async () => {
     setLoading(true);
-
     try {
-      const token = localStorage.getItem("token"); // supondo que o token esteja salvo no localStorage
-
+      const token = localStorage.getItem("token");
       if (!token) {
         console.error("Token de autenticação não encontrado.");
         return;
@@ -50,7 +49,7 @@ export default function Home({ userId }: { userId: string }) {
           method: "GET",
           headers: {
             "Content-Type": "application/json",
-            Authorization: `Bearer ${token}`, // envia o token no header
+            Authorization: `Bearer ${token}`,
           },
         }
       );
@@ -72,6 +71,15 @@ export default function Home({ userId }: { userId: string }) {
     fetchActivities();
   }, [sortOrder]);
 
+  const handleTypeToggle = (type: number) => {
+    setSelectedTypes((prev) =>
+      prev.includes(type) ? prev.filter((t) => t !== type) : [...prev, type]
+    );
+  };
+
+  const isTypeSelected = (type: number) =>
+    selectedTypes.length === 0 || selectedTypes.includes(type);
+
   const groupedActivities = activities.reduce<Record<number, Activity[]>>(
     (acc, activity) => {
       if (!acc[activity.type]) {
@@ -91,31 +99,40 @@ export default function Home({ userId }: { userId: string }) {
         <AsideMenu />
 
         <MainContent>
-          <div className="flex items-center justify-between mb-6">
-            <h1 className="text-2xl font-bold text-gray-800">
-              Todas as Atividades
-            </h1>
-            <div className="flex gap-2">
+          <div className="flex flex-col gap-4 mb-6">
+            <div className="flex items-center justify-between">
+              <h1 className="text-2xl font-bold text-gray-800">Atividades</h1>
+            </div>
+
+            <div className="flex flex-wrap gap-2">
               <button
-                onClick={() => setSortOrder("latest")}
-                className={`px-4 py-2 rounded-lg ${
-                  sortOrder === "latest"
-                    ? "bg-blue-700 text-white"
-                    : "bg-gray-200 text-gray-700"
+                onClick={() => setSelectedTypes([])}
+                className={`px-4 py-2 rounded-full cursor-pointer transition-colors duration-200 ${
+                  selectedTypes.length === 0
+                    ? "bg-blue-600 text-white"
+                    : "bg-gray-200 text-gray-800 hover:bg-gray-300"
                 }`}
               >
-                Mais recentes
+                Todas
               </button>
-              <button
-                onClick={() => setSortOrder("oldest")}
-                className={`px-4 py-2 rounded-lg ${
-                  sortOrder === "oldest"
-                    ? "bg-blue-700 text-white"
-                    : "bg-gray-200 text-gray-700"
-                }`}
-              >
-                Mais antigas
-              </button>
+              {Object.entries(activityTypeMap).map(([key, { name }]) => {
+                const type = parseInt(key);
+                const isSelected = selectedTypes.includes(type);
+
+                return (
+                  <button
+                    key={type}
+                    onClick={() => handleTypeToggle(type)}
+                    className={`px-4 py-2 rounded-full cursor-pointer transition-colors duration-200 ${
+                      isSelected
+                        ? "bg-blue-600 text-white"
+                        : "bg-gray-200 text-gray-800 hover:bg-gray-300"
+                    }`}
+                  >
+                    {name}
+                  </button>
+                );
+              })}
             </div>
           </div>
 
@@ -127,7 +144,11 @@ export default function Home({ userId }: { userId: string }) {
             Object.entries(activityTypeMap).map(([type, { name, color }]) => {
               const typedActivities = groupedActivities[parseInt(type)] || [];
 
-              if (typedActivities.length === 0) return null;
+              if (
+                !isTypeSelected(parseInt(type)) ||
+                typedActivities.length === 0
+              )
+                return null;
 
               return (
                 <section key={type} className="mb-10">
