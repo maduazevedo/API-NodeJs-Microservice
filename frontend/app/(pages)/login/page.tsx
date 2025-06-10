@@ -37,7 +37,7 @@ export default function LoginPage() {
       console.log("Login realizado com sucesso:", data);
 
       // Redireciona se o login for bem-sucedido
-      router.push("/home"); // ou /dashboard, conforme sua aplicação
+      router.push("/ativity/my"); // ou /dashboard, conforme sua aplicação
     } catch (error) {
       console.error("Erro na requisição:", error);
       setError("Erro ao conectar com o servidor.");

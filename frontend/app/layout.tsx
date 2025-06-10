@@ -1,12 +1,21 @@
 import type { Metadata } from "next";
 import "./globals.css";
-import { Roboto } from "next/font/google";
+import { Roboto, Montserrat } from "next/font/google";
 
+// Fonte Roboto
 const roboto = Roboto({
-  weight: ["400", "500", "700"], // Especifique os pesos que você precisa
-  subsets: ["latin"], // Escolha os subsets apropriados
-  display: "swap", // Para melhor performance
-  variable: "--font-roboto", // Opcional: para usar como CSS variable
+  weight: ["400", "500", "700"],
+  subsets: ["latin"],
+  display: "swap",
+  variable: "--font-roboto",
+});
+
+// Fonte Montserrat
+const montserrat = Montserrat({
+  weight: ["400", "500", "600", "700"],
+  subsets: ["latin"],
+  display: "swap",
+  variable: "--font-montserrat",
 });
 
 export const metadata: Metadata = {
@@ -20,8 +29,8 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en">
-      <body className={`${roboto.variable}  antialiased`}>{children}</body>
+    <html lang="en" className={`${roboto.variable} ${montserrat.variable}`}>
+      <body className="antialiased">{children}</body>
     </html>
   );
 }
