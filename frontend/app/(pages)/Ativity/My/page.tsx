@@ -4,25 +4,17 @@ import MainContent from "@/app/components/MainContent";
 
 export default function Home() {
   return (
-    <div className="bg-white min-h-screen">
-      
+    <div className="bg-gray-50 min-h-screen">
       <Header />
 
-      <main className="flex pt-20 flex gap-4"> 
-        
+      <main className="flex pt-20 gap-4">
         <AsideMenu />
 
-<MainContent>
-  <div className="space-y-6 text-gray-800">
-    <h1 className="text-3xl font-bold text-gray-900">
-      Minhas atividades
-    </h1>
-
-    
-  </div>
-</MainContent>
-
-
+        <MainContent>
+          <div className="space-y-6 text-gray-800">
+            <h1 className="text-2xl font-bold">Minhas atividades</h1>
+          </div>
+        </MainContent>
       </main>
     </div>
   );

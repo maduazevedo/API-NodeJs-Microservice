@@ -1,62 +1,156 @@
+"use client";
+
+import { useEffect, useState } from "react";
 import Header from "@/app/components/Header";
 import AsideMenu from "@/app/components/AsideMenu";
 import MainContent from "@/app/components/MainContent";
+import CardComponent from "@/app/components/Card";
 
-export default function Home() {
+interface Activity {
+  id: string;
+  title: string;
+  description: string;
+  confirmationCode: string;
+  scheduledDate: string;
+  createdAt: string;
+  deletedAt: string | null;
+  completedAt: string | null;
+  isPrivate: boolean;
+  creatorId: string;
+  type: number;
+}
+
+const activityTypeMap: Record<number, { name: string; color: string }> = {
+  1: { name: "Ciclismo", color: "bg-blue-100 text-blue-800" },
+  2: { name: "Corrida", color: "bg-green-100 text-green-800" },
+  3: { name: "Natação", color: "bg-purple-100 text-purple-800" },
+  4: { name: "Musculação", color: "bg-yellow-100 text-yellow-800" },
+  5: { name: "Yoga", color: "bg-pink-100 text-pink-800" },
+};
+
+export default function Home({ userId }: { userId: string }) {
+  const [activities, setActivities] = useState<Activity[]>([]);
+  const [sortOrder, setSortOrder] = useState<"latest" | "oldest">("latest");
+  const [loading, setLoading] = useState(true);
+
+  const fetchActivities = async () => {
+    setLoading(true);
+
+    try {
+      const token = localStorage.getItem("token"); // supondo que o token esteja salvo no localStorage
+
+      if (!token) {
+        console.error("Token de autenticação não encontrado.");
+        return;
+      }
+
+      const res = await fetch(
+        `https://SEU_BACKEND_URL.com/activities?order=${sortOrder}`,
+        {
+          method: "GET",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`, // envia o token no header
+          },
+        }
+      );
+
+      if (!res.ok) {
+        throw new Error("Erro ao buscar atividades");
+      }
+
+      const data = await res.json();
+      setActivities(data);
+    } catch (error) {
+      console.error("Erro na requisição:", error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    fetchActivities();
+  }, [sortOrder]);
+
+  const groupedActivities = activities.reduce<Record<number, Activity[]>>(
+    (acc, activity) => {
+      if (!acc[activity.type]) {
+        acc[activity.type] = [];
+      }
+      acc[activity.type].push(activity);
+      return acc;
+    },
+    {}
+  );
+
   return (
-    <div className="bg-white min-h-screen">
+    <div className="bg-gray-50 min-h-screen">
       <Header />
 
       <main className="flex pt-20 gap-4">
         <AsideMenu />
 
         <MainContent>
-          <div className="space-y-6 text-gray-800">
-            <h1 className="text-3xl font-bold text-gray-900">
-              Todas as atividades
+          <div className="flex items-center justify-between mb-6">
+            <h1 className="text-2xl font-bold text-gray-800">
+              Todas as Atividades
             </h1>
-
-            <p className="text-lg leading-relaxed">
-              Nossa plataforma foi criada para otimizar o gerenciamento de
-              atividades de maneira prática e intuitiva. Aqui você pode
-              registrar, visualizar e editar suas tarefas com poucos cliques,
-              mantendo tudo sempre organizado.
-            </p>
-
-            <div className="bg-gray-100 rounded-xl p-6 shadow-sm">
-              <h2 className="text-xl font-semibold text-blue-900 mb-4">
-                Funcionalidades principais
-              </h2>
-              <ul className="space-y-3 text-base">
-                <li className="flex items-start gap-2">
-                  <span className="text-blue-600 font-semibold">✔</span>
-                  <span>
-                    <strong>Criação de atividades:</strong> registre tarefas com
-                    título, descrição, data e status.
-                  </span>
-                </li>
-                <li className="flex items-start gap-2">
-                  <span className="text-blue-600 font-semibold">✔</span>
-                  <span>
-                    <strong>Visualização organizada:</strong> acesse todas as
-                    atividades em uma interface clara e agrupada.
-                  </span>
-                </li>
-                <li className="flex items-start gap-2">
-                  <span className="text-blue-600 font-semibold">✔</span>
-                  <span>
-                    <strong>Edição rápida:</strong> atualize facilmente qualquer
-                    atividade para manter os dados atualizados.
-                  </span>
-                </li>
-              </ul>
+            <div className="flex gap-2">
+              <button
+                onClick={() => setSortOrder("latest")}
+                className={`px-4 py-2 rounded-lg ${
+                  sortOrder === "latest"
+                    ? "bg-blue-700 text-white"
+                    : "bg-gray-200 text-gray-700"
+                }`}
+              >
+                Mais recentes
+              </button>
+              <button
+                onClick={() => setSortOrder("oldest")}
+                className={`px-4 py-2 rounded-lg ${
+                  sortOrder === "oldest"
+                    ? "bg-blue-700 text-white"
+                    : "bg-gray-200 text-gray-700"
+                }`}
+              >
+                Mais antigas
+              </button>
             </div>
-
-            <p className="text-base text-gray-700">
-              Use o menu lateral para acessar suas atividades, ver o histórico
-              completo ou gerenciar seu perfil pessoal.
-            </p>
           </div>
+
+          {loading ? (
+            <p>Carregando atividades...</p>
+          ) : activities.length === 0 ? (
+            <p>Nenhuma atividade encontrada.</p>
+          ) : (
+            Object.entries(activityTypeMap).map(([type, { name, color }]) => {
+              const typedActivities = groupedActivities[parseInt(type)] || [];
+
+              if (typedActivities.length === 0) return null;
+
+              return (
+                <section key={type} className="mb-10">
+                  <h2
+                    className={`text-xl font-semibold mb-4 px-2 py-1 inline-block rounded ${color}`}
+                  >
+                    {name}
+                  </h2>
+
+                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 p-4">
+                    {typedActivities.map((act) => (
+                      <CardComponent
+                        key={act.id}
+                        activity={act}
+                        userId={userId}
+                        onParticipate={() => {}}
+                      />
+                    ))}
+                  </div>
+                </section>
+              );
+            })
+          )}
         </MainContent>
       </main>
     </div>
