@@ -21,7 +21,7 @@ export default function LoginPage() {
     setError("");
 
     try {
-      const response = await fetch("http://localhost:3001/api/login", {
+      const response = await fetch("http://localhost:3001/auth/sign-in", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(formData),
@@ -36,8 +36,10 @@ export default function LoginPage() {
       const data = await response.json();
       console.log("Login realizado com sucesso:", data);
 
+      localStorage.setItem("token", data.token);
+
       // Redireciona se o login for bem-sucedido
-      router.push("/ativity/my"); // ou /dashboard, conforme sua aplicação
+      router.push("/Ativity/My"); // ou /dashboard, conforme sua aplicação
     } catch (error) {
       console.error("Erro na requisição:", error);
       setError("Erro ao conectar com o servidor.");
