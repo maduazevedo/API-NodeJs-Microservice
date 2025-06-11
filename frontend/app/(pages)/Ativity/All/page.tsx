@@ -34,20 +34,30 @@ export default function Home({ userId }: { userId: string }) {
   const [loading, setLoading] = useState(true);
   const [selectedTypes, setSelectedTypes] = useState<number[]>([]);
 
-  const fetchActivities = async () => {
-    setLoading(true);
-    try {
-      // 🔄 Buscar atividades do backend
-      // ⬅️ Esta URL deve responder com todas as atividades registradas (GET /api/activities)
-      const response = await fetch("/api/activities");
-      const data = await response.json();
-      setActivities(data);
-    } catch (error) {
-      console.error("Error fetching activities:", error);
-    } finally {
-      setLoading(false);
+const fetchActivities = async () => {
+  const token = localStorage.getItem("token");
+  setLoading(true);
+  try {
+    const response = await fetch("http://localhost:3003/activity/all", {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
+    const data = await response.json();
+
+    if (Array.isArray(data.activities)) {
+      setActivities(data.activities);
+    } else {
+      console.error("Resposta inesperada da API:", data);
+      setActivities([]);
     }
-  };
+  } catch (error) {
+    console.error("Error fetching activities:", error);
+    setActivities([]);
+  } finally {
+    setLoading(false);
+  }
+};
 
   useEffect(() => {
     fetchActivities();

@@ -65,9 +65,12 @@ export default function CardComponent({
 
     try {
       // TODO: Substituir pela URL correta da API que registra a participação em uma atividade
-      const response = await fetch("COLOCAR URL", {
+      const response = await fetch(`http://localhost:3003/activity/${activity.id}/subscribe`, {
+        headers: {
+          "Content-Type": "application/json",
+          Authorization : `Bearer ${localStorage.getItem("token")}`, // Adiciona o token de autenticação
+        },
         method: "POST",
-        headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ userId, activityId: activity.id }),
       });
 

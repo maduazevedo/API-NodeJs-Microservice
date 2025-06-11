@@ -145,7 +145,6 @@ export async function createActivity(idCreator: string, title: string, descripti
     const confirmationCode = uuidv4();
     const createdAt = new Date()
 
-    try {
 
         const activity = await saveActivity( idCreator, title, description, type, isPrivateRaw, scheduledDateRaw, createdAt, confirmationCode);
         
@@ -162,11 +161,6 @@ export async function createActivity(idCreator: string, title: string, descripti
         }
 
         return response
-        
-    } catch (error) {
-
-        throw new ServerError("Erro ao criar atividade.", 500);
-    }
 }
 
 //7. PUT ACTIVITIES/ID/UPDATE

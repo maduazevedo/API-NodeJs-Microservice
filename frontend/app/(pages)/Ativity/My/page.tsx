@@ -27,38 +27,40 @@ export default function MyActivitiesPage() {
   const [isCreateOpen, setIsCreateOpen] = useState(false);
   const [loading, setLoading] = useState(true);
 
+  async function fetchActivities() {
+
+    const token = localStorage.getItem("token"); 
+
+    try {
+      const res = await fetch("http://localhost:3003/activity/user/creator/all", {
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`, // Adiciona o token de autenticação
+        }
+    });
+      const data = await res.json();
+      setActivities(data);
+    } catch (error) {
+      console.error("Erro ao buscar atividades:", error);
+    } finally {
+      setLoading(false);
+    }
+  }
   // 🔄 Buscar atividades do backend
   useEffect(() => {
-    async function fetchActivities() {
-      try {
-        const res = await fetch("/api/activities");
-        const data = await res.json();
-        setActivities(data);
-      } catch (error) {
-        console.error("Erro ao buscar atividades:", error);
-      } finally {
-        setLoading(false);
-      }
-    }
-
+    
     fetchActivities();
   }, []);
 
   // ➕ Criar nova atividade
-  async function handleCreate(newAct: Activity) {
+async function handleCreate(newActivity: Activity) {
     try {
-      const res = await fetch("/api/activities", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(newAct),
-      });
-
-      const created = await res.json();
-      setActivities((prev) => [created, ...prev]);
+      setLoading(true);
+      await fetchActivities(); // Recarrega do backend
     } catch (error) {
-      console.error("Erro ao criar atividade:", error);
+      console.error("Erro ao atualizar lista de atividades:", error);
+    } finally {
+      setLoading(false);
     }
   }
 

@@ -25,7 +25,7 @@ export function activityController (server: Express){
                 res.status(error.statusCode).send({error: error.message})
                 return
             }else{
-                res.status(500).send({error: "Erro inesperado. "})
+                res.status(500).send({error: (error as Error).message})
             }
         }
     });
@@ -168,13 +168,13 @@ export function activityController (server: Express){
             const {id} = req.params;
 
             await concludeActivities(idCreator, id)
-            res.status(200).send({message: "Atividade concluída com sucesso"});
+            res.status(200).json({message: "Atividade concluída com sucesso"});
         }catch(error){
             if (error instanceof ServerError){
-                res.status(error.statusCode).send({error: error.message})
+                res.status(error.statusCode).json({error: error.message})
                 return
             }else{
-                res.status(500).send({error: "Erro inesperado. "})
+                res.status(500).json({error: "Erro inesperado. "})
             }
         }
     }); 
@@ -219,14 +219,14 @@ export function activityController (server: Express){
             const idUser = res.userId as string
             const {id} = req.params;
             await deleteActivities(idUser, id)
-            res.status(200).send({message: "Atividade excluída com sucesso. "});
+            res.status(200).json({message: "Atividade excluída com sucesso. "});
 
         }catch(error){
             if (error instanceof ServerError){
-                res.status(error.statusCode).send({error: error.message})
+                res.status(error.statusCode).json({error: error.message})
                 return
             }else{
-                res.status(500).send({error: "Erro inesperado. "})
+                res.status(500).json({error: "Erro inesperado. "})
             }
         }
     });

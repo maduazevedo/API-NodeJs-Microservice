@@ -1,11 +1,13 @@
 "use client";
-
+import { useRouter } from "next/navigation";
 import { useState } from "react";
 import InputComponent from "@/app/components/Input";
 import { Button } from "@/app/components/Button";
 import Link from "next/link";
 
 export default function RegisterPage() {
+  const router = useRouter();
+
   const [formData, setFormData] = useState({
     name: "",
     cpf: "",
@@ -22,33 +24,36 @@ export default function RegisterPage() {
     }));
   };
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
+const handleSubmit = async (e: React.FormEvent) => {
+  e.preventDefault();
 
-    if (formData.password !== formData.confirmPassword) {
-      alert("As senhas não coincidem.");
-      return;
+  if (formData.password !== formData.confirmPassword) {
+    alert("As senhas não coincidem.");
+    return;
+  }
+
+  try {
+    const response = await fetch("http://localhost:3001/auth/register", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(formData),
+    });
+
+    if (!response.ok) {
+      throw new Error("Erro ao registrar.");
     }
 
-    try {
-      const response = await fetch("COLOCAR URL", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(formData),
-      });
+    const data = await response.json();
+    console.log("Cadastro realizado:", data);
 
-      if (!response.ok) {
-        throw new Error("Erro ao registrar.");
-      }
+    router.push("/login"); // Redireciona após o sucesso
+  } catch (error) {
+    console.error("Erro:", error);
+  }
+};
 
-      const data = await response.json();
-      console.log("Cadastro realizado:", data);
-    } catch (error) {
-      console.error("Erro:", error);
-    }
-  };
 
   return (
     <main className="min-h-screen bg-gray-100 p-4 flex items-center justify-center">

@@ -20,7 +20,7 @@ export default function CreateActivityModal({
     title: "",
     description: "",
     scheduledDate: "",
-    type: "",
+    type: 0,
     isPrivate: false,
   });
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -41,19 +41,36 @@ export default function CreateActivityModal({
   const handleSubmit = async () => {
     setIsSubmitting(true);
 
-    const res = await fetch("URL CRIAR ATIVIDADE", {
-      // TODO: Substituir pela URL correta da API que cria uma nova atividade
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ ...form }),
-    });
+    if (!form.title || !form.description || !form.scheduledDate || !form.type) {
+    console.error("Preencha todos os campos obrigatórios.");
+    setIsSubmitting(false);
+    return;
+  }
+
+  const payload = {
+    title: form.title,
+    description: form.description,
+    type: Number(form.type),
+    scheduledDate: form.scheduledDate,
+    isPrivate: form.isPrivate.toString(),
+  };
+
+  const res = await fetch("http://localhost:3003/activity/new", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${localStorage.getItem("token")}`, // Adiciona o token de autenticação
+    },
+    body: JSON.stringify(payload),
+  });
 
     if (res.ok) {
       const data = await res.json();
       onCreate(data);
       onClose();
     } else {
-      console.error("Erro ao criar");
+      const errorData = await res.json();
+      console.error("Erro ao criar:", errorData.error || "Erro desconhecido");
     }
 
     setIsSubmitting(false);
@@ -104,26 +121,26 @@ export default function CreateActivityModal({
         </div>
 
         {/* Select Tipo abaixo (linha inteira) */}
-        <div className="mb-6 flex flex-col gap-2">
+        <div className="mb-6 text-black flex flex-col gap-2">
           <label htmlFor="type" className="text-black">
             Tipo
           </label>
-          <select
-            id="type"
-            name="type"
-            value={form.type}
-            onChange={handleChange}
-            className="w-full text-black px-3 py-2 bg-transparent border-0 border-b-2 border-gray-300 focus:border-blue-500 focus:outline-none focus:ring-0 transition-colors duration-300"
-          >
-            <option value="" disabled>
-              Selecione o tipo
-            </option>
-            <option value="1">Ciclismo</option>
-            <option value="2">Corrida</option>
-            <option value="3">Natação</option>
-            <option value="4">Musculação</option>
-            <option value="5">Yoga</option>
-          </select>
+            <select
+              id="type"
+              name="type"
+              value={form.type}
+              onChange={handleChange}
+              className="..."
+            >
+              <option value={0} disabled>
+                Selecione o tipo
+              </option>
+              <option value={1}>Ciclismo</option>
+              <option value={2}>Corrida</option>
+              <option value={3}>Natação</option>
+              <option value={4}>Musculação</option>
+              <option value={5}>Yoga</option>
+            </select>
         </div>
 
         {/* Descrição (textarea) abaixo */}
