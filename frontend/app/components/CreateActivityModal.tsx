@@ -41,19 +41,36 @@ export default function CreateActivityModal({
   const handleSubmit = async () => {
     setIsSubmitting(true);
 
-    const res = await fetch("URL CRIAR ATIVIDADE", {
-      // TODO: Substituir pela URL correta da API que cria uma nova atividade
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ ...form }),
-    });
+    if (!form.title || !form.description || !form.scheduledDate || !form.type) {
+    console.error("Preencha todos os campos obrigatórios.");
+    setIsSubmitting(false);
+    return;
+  }
+
+  const payload = {
+    title: form.title,
+    description: form.description,
+    type: Number(form.type),
+    scheduledDate: form.scheduledDate,
+    isPrivate: form.isPrivate.toString(),
+  };
+
+  const res = await fetch("http://localhost:3003/activity/new", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${localStorage.getItem("token")}`, // Adiciona o token de autenticação
+    },
+    body: JSON.stringify(payload),
+  });
 
     if (res.ok) {
       const data = await res.json();
       onCreate(data);
       onClose();
     } else {
-      console.error("Erro ao criar");
+      const errorData = await res.json();
+      console.error("Erro ao criar:", errorData.error || "Erro desconhecido");
     }
 
     setIsSubmitting(false);

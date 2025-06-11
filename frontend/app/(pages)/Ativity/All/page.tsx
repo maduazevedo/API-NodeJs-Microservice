@@ -37,9 +37,7 @@ export default function Home({ userId }: { userId: string }) {
   const fetchActivities = async () => {
     setLoading(true);
     try {
-      // 🔄 Buscar atividades do backend
-      // ⬅️ Esta URL deve responder com todas as atividades registradas (GET /api/activities)
-      const response = await fetch("/api/activities");
+      const response = await fetch("http://localhost:3003/activity/all");
       const data = await response.json();
       setActivities(data);
     } catch (error) {

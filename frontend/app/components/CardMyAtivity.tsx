@@ -45,6 +45,25 @@ const activityTypeMap: Record<number, { name: string; color: string }> = {
   5: { name: "Yoga", color: "bg-pink-100 text-pink-800" },
 };
 
+// Hook para formatar datas somente no cliente
+function useClientDateFormat(dateString: string) {
+  const [formattedDate, setFormattedDate] = useState<string>("");
+
+  useEffect(() => {
+    if (!dateString) return;
+    const date = new Date(dateString);
+    setFormattedDate(
+      date.toLocaleDateString("pt-BR", {
+        day: "2-digit",
+        month: "short",
+        year: "numeric",
+      })
+    );
+  }, [dateString]);
+
+  return formattedDate;
+}
+
 export default function MyActivityCardComponent({
   activity,
   onDelete,
@@ -55,18 +74,11 @@ export default function MyActivityCardComponent({
   const [isCompleting, setIsCompleting] = useState(false);
   const [localActivity, setLocalActivity] = useState<Activity>(activity); // controle local
 
-  const formatDate = (dateString: string) => {
-    return new Date(dateString).toLocaleDateString("pt-BR", {
-      day: "2-digit",
-      month: "short",
-      year: "numeric",
-    });
-  };
-
-  const createdAt = formatDate(localActivity.createdAt);
-  const scheduledDate = formatDate(localActivity.scheduledDate);
+  // Usar hook para formatar datas só no cliente
+  const createdAt = useClientDateFormat(localActivity.createdAt);
+  const scheduledDate = useClientDateFormat(localActivity.scheduledDate);
   const completedAt = localActivity.completedAt
-    ? formatDate(localActivity.completedAt)
+    ? useClientDateFormat(localActivity.completedAt)
     : null;
 
   const activityType = activityTypeMap[localActivity.type] || {
@@ -75,22 +87,38 @@ export default function MyActivityCardComponent({
   };
 
   useEffect(() => {
+    const token = localStorage.getItem("token");
     if (open) {
-      fetch(`/api/activities/${localActivity.id}/participants`)
-        // TODO: Verificar se essa é a URL correta para buscar participantes de uma atividade
+      fetch("http://localhost:3003/activity/user/creator", {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      })
         .then((res) => res.json())
-        .then((data: Participant[]) => setParticipants(data))
-        .catch((err) => console.error("Erro ao carregar participantes", err));
+        .then((data: Activity[]) => {
+          console.log("Atividades criadas pelo usuário:", data);
+          // Você pode implementar lógica para pegar participantes aqui se precisar
+        })
+        .catch((err) =>
+          console.error("Erro ao carregar atividades criadas pelo usuário", err)
+        );
     }
-  }, [open, localActivity.id]);
+  }, [open]);
 
   const handleDelete = async () => {
+    const token = localStorage.getItem("token");
     setIsDeleting(true);
     try {
-      const res = await fetch(`URL DELETAR ATIVIDADE`, {
-        // TODO: Substituir pela URL correta da API que deleta uma atividade
-        method: "DELETE",
-      });
+      const res = await fetch(
+        `http://localhost:3003/activity/${localActivity.id}/delete`,
+        {
+          method: "DELETE",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
       if (!res.ok) throw new Error("Erro ao excluir atividade");
       if (onDelete) onDelete(localActivity.id);
     } catch (error) {
@@ -101,12 +129,19 @@ export default function MyActivityCardComponent({
   };
 
   const handleComplete = async () => {
+    const token = localStorage.getItem("token");
     setIsCompleting(true);
     try {
-      const res = await fetch(`URL COMPLETAR ATIVIDADE`, {
-        // TODO: Substituir pela URL correta da API que marca uma atividade como concluída
-        method: "PUT",
-      });
+      const res = await fetch(
+        `http://localhost:3003/activity/${localActivity.id}/conclude`,
+        {
+          method: "PUT",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
       if (!res.ok) throw new Error("Erro ao concluir atividade");
 
       const updatedActivity = await res.json();
@@ -157,11 +192,16 @@ export default function MyActivityCardComponent({
             onClick={() => setOpen(true)}
             className="text-sm text-gray-500 line-clamp-2 mb-2 cursor-pointer"
           >
-            {localActivity.description}
+            {(localActivity.description || "").split("\n").map((p, i) => (
+              <span key={i}>
+                {p}
+                <br />
+              </span>
+            ))}
           </p>
 
           <div className="flex items-center justify-between text-xs text-gray-400 mb-3">
-            <span>{createdAt}</span>
+            <span>{createdAt || "..."}</span>
             <span className={`px-2 py-0.5 rounded-full ${activityType.color}`}>
               {activityType.name}
             </span>
@@ -199,7 +239,7 @@ export default function MyActivityCardComponent({
           </div>
 
           <div className="prose max-w-none text-gray-700">
-            {localActivity.description.split("\n").map((p, i) => (
+            {(localActivity.description || "").split("\n").map((p, i) => (
               <p key={i}>{p}</p>
             ))}
           </div>
@@ -208,11 +248,11 @@ export default function MyActivityCardComponent({
             <div className="space-y-2">
               <div className="flex items-center text-sm text-gray-500">
                 <FaCalendarAlt className="mr-2 text-gray-400" />
-                Criado em: {createdAt}
+                Criado em: {createdAt || "..."}
               </div>
               <div className="flex items-center text-sm text-gray-500">
                 <FaClock className="mr-2 text-gray-400" />
-                Agendado para: {scheduledDate}
+                Agendado para: {scheduledDate || "..."}
               </div>
             </div>
             <div className="space-y-2">
@@ -234,16 +274,17 @@ export default function MyActivityCardComponent({
               Participantes ({participants.length})
             </h4>
             <ul className="space-y-1 max-h-40 overflow-y-auto">
-              {participants.map((p) => (
-                <li
-                  key={p.id}
-                  className="flex items-center gap-2 text-sm text-gray-600"
-                >
-                  <FaUser className="text-gray-400" />
-                  <span className="font-semibold">{p.name}</span> — {p.email}
-                </li>
-              ))}
-              {participants.length === 0 && (
+              {participants.length > 0 ? (
+                participants.map((p) => (
+                  <li
+                    key={p.id}
+                    className="flex items-center gap-2 text-sm text-gray-600"
+                  >
+                    <FaUser className="text-gray-400" />
+                    <span className="font-semibold">{p.name}</span> — {p.email}
+                  </li>
+                ))
+              ) : (
                 <p className="text-sm text-gray-400 italic">
                   Nenhum participante registrado.
                 </p>
@@ -271,7 +312,7 @@ export default function MyActivityCardComponent({
             onClick={handleDelete}
             disabled={isDeleting}
             className={`mt-4 w-full py-3 px-4 rounded-lg font-medium text-white flex items-center justify-center gap-2
-              bg-red-600 hover:bg-red-800 transition-colors ${
+              bg-red-600 hover:bg-red-700 transition-colors ${
                 isDeleting ? "opacity-50 cursor-not-allowed" : "cursor-pointer"
               }`}
           >

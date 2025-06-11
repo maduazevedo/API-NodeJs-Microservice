@@ -30,8 +30,16 @@ export default function MyActivitiesPage() {
   // 🔄 Buscar atividades do backend
   useEffect(() => {
     async function fetchActivities() {
+
+      const token = localStorage.getItem("token"); 
+
       try {
-        const res = await fetch("/api/activities");
+        const res = await fetch("http://localhost:3003/activity/user/creator/all", {
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`, // Adiciona o token de autenticação
+          }
+      });
         const data = await res.json();
         setActivities(data);
       } catch (error) {

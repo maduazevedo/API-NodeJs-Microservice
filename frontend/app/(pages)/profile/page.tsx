@@ -68,7 +68,7 @@ export default function ProfilePage() {
     setIsLoading(true);
     const token = localStorage.getItem("token");
 
-    fetch("http://localhost:3002/user", {
+    fetch("http://localhost:3002/user/update", {
       method: "PUT",
       headers: {
         "Content-Type": "application/json",
